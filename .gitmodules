@@ -1,0 +1,3 @@
+[submodule "porpoise"]
+	path = porpoise
+	url = git://github.com/greathouse/porpoise.git
