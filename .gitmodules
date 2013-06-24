@@ -1,3 +1,6 @@
 [submodule "porpoise"]
 	path = porpoise
-	url = git://github.com/greathouse/porpoise.git
+	url = git@github.com:greathouse/porpoise.git
+[submodule "Core/resources/porpoise"]
+	path = Core/resources/porpoise
+	url = https://github.com/greathouse/porpoise.git
