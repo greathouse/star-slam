@@ -4,9 +4,14 @@ import starslam.Session
 
 
 class ScanProjectTest extends TestBase {
+	private void writeFile(String path, String contents) {
+		new File(path).withWriter { writer ->
+			writer.writeLine(contents)
+		}
+	}
 	
 	void test_scan_shouldSaveProjectAndScanAttributes() {
-		def samplePath = /\src\test\resources\StarSlamSampleProject/
+		def samplePath = /\src\test\resources\SimpleProject/
 		def workingDir = System.getProperty("user.dir")
 		def args = new RunScanArguments() 
 		args.with {
@@ -36,9 +41,44 @@ class ScanProjectTest extends TestBase {
 		def configFile = latestScan.configFiles[0]
 		assert configFile.name == args.projectRoot+/\web.config/
 		assert configFile.md5 != null
-		println configFile.md5
 		assert configFile.isNew
 		assert configFile.hasChanged == false
 		
+	}
+	
+	void test_scan_withConfigFileChange_shouldIndicateNotNewAndHasChanged() {
+		def samplePath = /\src\test\resources\MutatingProject/
+		def workingDir = System.getProperty("user.dir")
+		def args = new RunScanArguments()
+		args.with {
+			projectName = "Test Project " + UUID.randomUUID().toString()
+			projectRoot = workingDir+samplePath
+			configFilePattern = "*.config"
+			sqlFileDirectory = "SQL.Migration"
+		}
+		Session.sql = sql
+		
+		def pathToConfig = args.projectRoot+/\web.config/
+		writeFile(pathToConfig, "Initial content")
+		
+		def scanService = new ScanService()
+		
+		def assertConfigFile = { isNew, hasChanged ->
+			def latestScan = scanService.latestScan(args.projectName)
+			assert latestScan.configFiles != null
+			assert latestScan.configFiles.size == 1
+			
+			def configFile = latestScan.configFiles[0]
+			assert configFile.name == pathToConfig
+			assert configFile.isNew == isNew
+			assert configFile.hasChanged == hasChanged
+		}
+		
+		scanService.scan(args)
+		assertConfigFile(true, false)
+		
+		writeFile(pathToConfig, "Updated Content")
+		scanService.scan(args)
+		assertConfigFile(false, true)
 	}
 }

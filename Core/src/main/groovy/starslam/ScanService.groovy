@@ -10,6 +10,18 @@ import java.nio.file.SimpleFileVisitor
 import java.security.MessageDigest
 
 class ScanService {
+	def configRowMapper = { it ->
+		if (!it) { return [:] }
+		
+		return [
+			scanId : it.scan_id
+			, created : it.created
+			, name : it.name
+			, md5 : it.md5
+			, isNew : it.is_new
+			, hasChanged : it.has_changed
+		]
+	}
 
 	void scan(RunScanArguments args) {
 		def project = persistProject(args.projectName)
@@ -32,14 +44,7 @@ class ScanService {
 		}
 		
 		Session.sql.eachRow("select * from configfile where scan_id = ${scanRow.id}") {
-			rtn.configFiles.add([
-				scanId : it.scan_id
-				, created : it.created
-				, name : it.name
-				, md5 : it.md5
-				, isNew : it.is_new
-				, hasChanged : it.has_changed
-			])
+			rtn.configFiles.add(configRowMapper(it))
 		}
 
 		rtn
@@ -53,26 +58,30 @@ class ScanService {
 				def fileName = filePath.fileName
 				if (matcher.matches(fileName)) {
 					def md5 = generateMd5(new File(filePath.toString()))
+					def previousFile = configRowMapper(Session.sql.firstRow("select * from configfile where name = ${filePath.toString()} order by created desc limit 1"))
+					def isNew = previousFile.isEmpty()
+					def hasChanged = (!isNew && previousFile.md5 != md5)
+					
 					Session.sql.execute("""
-				insert into ConfigFile (
-					id
-					, scan_id
-					, created
-					, name	
-					, md5
-					, is_new
-					, has_changed
-				)
-				values (
-					${UUID.randomUUID().toString()}
-					, ${scan.id}
-					, ${new Date().time}
-					, ${filePath.toString()}
-					, ${md5}
-					, ${true}
-					, ${false}
-				)
-				""")
+						insert into ConfigFile (
+							id
+							, scan_id
+							, created
+							, name	
+							, md5
+							, is_new
+							, has_changed
+						)
+						values (
+							${UUID.randomUUID().toString()}
+							, ${scan.id}
+							, ${new Date().time}
+							, ${filePath.toString()}
+							, ${md5}
+							, ${isNew}
+							, ${hasChanged}
+						)
+					""")
 				}
 				return FileVisitResult.CONTINUE;
 			}
