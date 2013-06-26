@@ -1,6 +1,6 @@
 package starslam
 
-class Arguments {
+class RunScanArguments {
 	def projectRoot
 	def projectName
 	def configFilePattern

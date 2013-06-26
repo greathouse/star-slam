@@ -21,7 +21,8 @@ class TestBase extends TestCase {
 	
 	private void cleanUpDatabase() {
 		[
-			'Scan'
+			'ConfigFile'
+			, 'Scan'
 			, 'Project'
 		].each {
 			sql.execute("delete from ${it}".toString())

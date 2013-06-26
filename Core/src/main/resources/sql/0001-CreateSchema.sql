@@ -12,7 +12,8 @@ create table Scan (
 	CREATED BIGINT not null,
 	DIRECTORY varchar(100) not null,
 	CONFIG_FILE_PATTERN varchar(100),
-	SQL_FILE_DIRECTORY varchar(100)
+	SQL_FILE_DIRECTORY varchar(100),
+	DEPLOY_TIME bigint not null
 );
 create primary key on Scan (id);
 alter table Scan add foreign key (project_id) references project(id);
@@ -21,7 +22,7 @@ create table ConfigFile (
 	ID varchar(50) not null,
 	SCAN_ID varchar(50) not null,
 	CREATED bigint not null,
-	NAME varchar(50),
+	NAME varchar(500),
 	MD5 varchar(32),
 	IS_NEW boolean,
 	HAS_CHANGED boolean
