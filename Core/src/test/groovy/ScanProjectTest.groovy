@@ -1,3 +1,5 @@
+import javax.xml.ws.WebEndpoint;
+
 import starslam.RunScanArguments
 import starslam.ScanService
 import starslam.Session
@@ -21,6 +23,7 @@ class ScanProjectTest extends TestBase {
 			sqlFileDirectory = "SQL.Migration"
 		}
 		Session.sql = sql
+		writeFile(args.projectRoot+/\web.config/, "<xml><some><content/></some></xml>")
 		
 		def scanService = new ScanService()
 		scanService.scan(args)

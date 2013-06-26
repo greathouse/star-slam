@@ -1,5 +1,3 @@
-StarSlamSampleProject
 *bin/
 *.settings
-MutatingProject
-SimpleProject
+Core/src/test/resources/**/*.config
