@@ -24,7 +24,8 @@ class TestBase extends TestCase {
 	
 	private void cleanUpDatabase() {
 		[
-			'ConfigFile'
+			'SqlFile'
+			, 'ConfigFile'
 			, 'Scan'
 			, 'Project'
 		].each {

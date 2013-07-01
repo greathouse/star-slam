@@ -28,11 +28,24 @@ class ScanService {
 			, hasChanged : it.has_changed
 		]
 	}
+	
+	def sqlFileRowMapper = { it ->
+		if (!it) { return [:] }
+		
+		return [
+			scanId : it.scan_id
+			, created : it.created
+			, name : it.name
+			, md5 : it.md5
+			, isNew : it.is_new
+		]
+	}
 
 	void scan(RunScanArguments args) {
 		def project = persistProject(args.projectName)
 		def scan = persistScan(args, project)
 		scanConfigs(scan)
+		scanSql(scan)
 	}
 
 	def latestScan(String projectName) {
@@ -47,28 +60,42 @@ class ScanService {
 			sqlFileDirectory = scanRow.sql_file_directory
 			deployTime = scanRow.deploy_time
 			configFiles = []
+			sqlFiles = []
 		}
 		
 		sql.eachRow("select * from configfile where scan_id = ${scanRow.id}") {
 			rtn.configFiles.add(configRowMapper(it))
 		}
+		
+		sql.eachRow("select * from sqlFile where scan_id = ${scanRow.id}") {
+			rtn.sqlFiles.add(sqlFileRowMapper(it))
+		}
 
 		rtn
 	}
-
-	private void scanConfigs(scan) {
-		def matcher = FileSystems.getDefault().getPathMatcher("glob:"+scan.configFilePattern);
+	
+	private void scanFilesForMatch(scan, String glob, Closure onMatchFound) {
+		def matcher = FileSystems.getDefault().getPathMatcher("glob:"+glob);
 		Files.walkFileTree(Paths.get(scan.directory), new SimpleFileVisitor<Path>() {
 			@Override
 			public FileVisitResult visitFile(Path filePath, BasicFileAttributes attrs) throws IOException {
 				def fileName = filePath.fileName
 				if (matcher.matches(fileName)) {
-					def md5 = generateMd5(new File(filePath.toString()))
-					def previousFile = configRowMapper(sql.firstRow("select * from configfile where name = ${filePath.toString()} order by created desc limit 1"))
-					def isNew = previousFile.isEmpty()
-					def hasChanged = (!isNew && previousFile.md5 != md5)
-					
-					sql.execute("""
+					onMatchFound(filePath)
+				}
+				return FileVisitResult.CONTINUE;
+			}
+		});
+	}
+
+	private void scanConfigs(scan) {
+		scanFilesForMatch(scan, scan.configFilePattern) { filePath ->
+			def md5 = generateMd5(new File(filePath.toString()))
+			def previousFile = configRowMapper(sql.firstRow("select * from configfile where name = ${filePath.toString()} order by created desc limit 1"))
+			def isNew = previousFile.isEmpty()
+			def hasChanged = (!isNew && previousFile.md5 != md5)
+			
+			sql.execute("""
 						insert into ConfigFile (
 							id
 							, scan_id
@@ -88,10 +115,34 @@ class ScanService {
 							, ${hasChanged}
 						)
 					""")
-				}
-				return FileVisitResult.CONTINUE;
-			}
-		});
+		}
+	}
+	
+	private void scanSql(scan) {
+		scanFilesForMatch(scan, "*.sql") { filePath ->
+			def md5 = generateMd5(new File(filePath.toString()))
+			def previousFile = sqlFileRowMapper(sql.firstRow("select * from sqlfile where name = ${filePath.toString()} order by created desc limit 1"))
+			def isNew = previousFile.isEmpty()
+			
+			sql.execute("""
+				insert into SqlFile (
+					id
+					, scan_id
+					, created
+					, name
+					, md5
+					, is_new
+				)
+				values (
+					${UUID.randomUUID().toString()}
+					, ${scan.id}
+					, ${new Date().time}
+					, ${filePath.toString()}
+					, ${md5}
+					, ${isNew}
+				)
+			""")
+		}
 	}
 
 	private def persistProject(String projectName) {

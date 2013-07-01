@@ -38,7 +38,7 @@ class ScanProjectTest extends TestBase {
 			configFilePattern = "*.config"
 			sqlFileDirectory = "SQL.Migration"
 		}
-		writeFile(args.projectRoot+/${S}web.config/, "<xml><some><content/></some></xml>")
+		writeFile(args.projectRoot+"${S}web.config", "<xml><some><content/></some></xml>")
 		
 		scanService.scan(args)
 		
@@ -72,7 +72,7 @@ class ScanProjectTest extends TestBase {
 			sqlFileDirectory = "SQL.Migration"
 		}
 		
-		def pathToConfig = args.projectRoot+/${S}web.config/
+		def pathToConfig = args.projectRoot+"${S}web.config"
 		writeFile(pathToConfig, "Initial content")
 		
 		def assertConfigFile = { isNew, hasChanged ->
@@ -140,6 +140,63 @@ class ScanProjectTest extends TestBase {
 		assert latestScan != null
 		assert latestScan.configFiles != null
 		assert latestScan.configFiles.size == 2
-		println latestScan.configFiles.find { it.name.contains('.config') }
+	}
+	
+	void test_scan_shouldFindSqlFiles() {
+		def args = new RunScanArguments()
+		args.with {
+			projectName = "Test Project " + UUID.randomUUID().toString()
+			projectRoot = createProjectRoot("MutatingProject").toString()
+			configFilePattern = "*{.config,.xml}"
+			sqlFileDirectory = "SQL.Migration"
+		}
+
+		def pathToSql = "${args.projectRoot}${S}${args.sqlFileDirectory}"
+		def file = '001.sql'
+		writeFile(pathToSql, file, 'SQL 1')
+
+		scanService.scan(args)
+		
+		def latestScan = scanService.latestScan(args.projectName)
+		assert latestScan != null
+		assert latestScan.sqlFiles != null
+		assert latestScan.sqlFiles.size == 1
+		def actual = latestScan.sqlFiles[0]
+		assert actual.name == pathToSql + S + file
+		assert actual.md5 != null
+		assert actual.isNew
+	}
+	
+	void test_scan_multipleSqlFiles_mutlipleScans_shouldIndicateNewFiles() {
+		def args = new RunScanArguments()
+		args.with {
+			projectName = "Test Project " + UUID.randomUUID().toString()
+			projectRoot = createProjectRoot("MutatingProject").toString()
+			configFilePattern = "*{.config,.xml}"
+			sqlFileDirectory = "SQL.Migration"
+		}
+
+		def pathToSql = "${args.projectRoot}${S}${args.sqlFileDirectory}"
+		def file1 = '001.sql'
+		writeFile(pathToSql, file1, 'SQL 1')
+
+		def assertIsNew = { scan, file, isNew ->
+			assert scan.sqlFiles.find { it.name == pathToSql + S + file }.isNew == isNew
+		}
+		
+		scanService.scan(args)
+		assertIsNew(scanService.latestScan(args.projectName), file1, true)
+		
+		def file2 = '002.sql'
+		writeFile(pathToSql, file2, 'SQL 2')
+		
+		scanService.scan(args)
+		
+		def latestScan = scanService.latestScan(args.projectName)
+		assert latestScan != null
+		assert latestScan.sqlFiles != null
+		assert latestScan.sqlFiles.size == 2
+		assertIsNew(latestScan, file1, false)
+		assertIsNew(latestScan, file2, true)
 	}
 }
