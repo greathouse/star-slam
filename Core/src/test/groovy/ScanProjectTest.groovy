@@ -2,12 +2,16 @@ import javax.xml.ws.WebEndpoint;
 
 import starslam.RunScanArguments
 import starslam.ScanService
-import starslam.Session
 import java.nio.file.*
 
 
 class ScanProjectTest extends TestBase {
 	def S = System.getProperty("file.separator")
+	ScanService scanService
+	
+	protected void onPostSetup() {
+		scanService = new ScanService(getConnection)
+	}
 	
 	private Path createProjectRoot(String name) {
 		return Files.createTempDirectory("SimpleProject")
@@ -34,10 +38,8 @@ class ScanProjectTest extends TestBase {
 			configFilePattern = "*.config"
 			sqlFileDirectory = "SQL.Migration"
 		}
-		Session.sql = sql
 		writeFile(args.projectRoot+/${S}web.config/, "<xml><some><content/></some></xml>")
 		
-		def scanService = new ScanService()
 		scanService.scan(args)
 		
 		def latestScan = scanService.latestScan(args.projectName)
@@ -69,12 +71,9 @@ class ScanProjectTest extends TestBase {
 			configFilePattern = "*.config"
 			sqlFileDirectory = "SQL.Migration"
 		}
-		Session.sql = sql
 		
 		def pathToConfig = args.projectRoot+/${S}web.config/
 		writeFile(pathToConfig, "Initial content")
-		
-		def scanService = new ScanService()
 		
 		def assertConfigFile = { isNew, hasChanged ->
 			def latestScan = scanService.latestScan(args.projectName)
@@ -103,13 +102,11 @@ class ScanProjectTest extends TestBase {
 			configFilePattern = "*.config"
 			sqlFileDirectory = "SQL.Migration"
 		}
-		Session.sql = sql
 
 		def pathToConfig = args.projectRoot+"${S}n-level${S}deep${S}"
 		def configFileName = 'web.config'
 		writeFile(pathToConfig, configFileName, "Initial content")
 
-		def scanService = new ScanService()
 		scanService.scan(args)
 		
 		def latestScan = scanService.latestScan(args.projectName)
@@ -129,7 +126,6 @@ class ScanProjectTest extends TestBase {
 			configFilePattern = "*{.config,.xml}"
 			sqlFileDirectory = "SQL.Migration"
 		}
-		Session.sql = sql
 
 		def pathToConfig = args.projectRoot
 		def configFileName1 = 'web.config'
@@ -138,7 +134,6 @@ class ScanProjectTest extends TestBase {
 		writeFile(pathToConfig, configFileName2, "Initial content")
 		writeFile(pathToConfig, 'negative.txt', 'Negative text file. Should not be included in scan')
 
-		def scanService = new ScanService()
 		scanService.scan(args)
 		
 		def latestScan = scanService.latestScan(args.projectName)

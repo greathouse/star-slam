@@ -10,6 +10,12 @@ import java.nio.file.SimpleFileVisitor
 import java.security.MessageDigest
 
 class ScanService {
+	Sql sql
+	
+	public ScanService(Closure getConnection) {
+		sql = getConnection()
+	}
+	
 	def configRowMapper = { it ->
 		if (!it) { return [:] }
 		
@@ -30,8 +36,8 @@ class ScanService {
 	}
 
 	def latestScan(String projectName) {
-		def projectRow = Session.sql.firstRow("select * from project where name = ${projectName}")
-		def scanRow = Session.sql.firstRow("select * from scan where project_id = ${projectRow.id} order by created desc")
+		def projectRow = sql.firstRow("select * from project where name = ${projectName}")
+		def scanRow = sql.firstRow("select * from scan where project_id = ${projectRow.id} order by created desc")
 		def rtn = [:]
 		rtn.with {
 			name = projectRow.name
@@ -43,7 +49,7 @@ class ScanService {
 			configFiles = []
 		}
 		
-		Session.sql.eachRow("select * from configfile where scan_id = ${scanRow.id}") {
+		sql.eachRow("select * from configfile where scan_id = ${scanRow.id}") {
 			rtn.configFiles.add(configRowMapper(it))
 		}
 
@@ -58,11 +64,11 @@ class ScanService {
 				def fileName = filePath.fileName
 				if (matcher.matches(fileName)) {
 					def md5 = generateMd5(new File(filePath.toString()))
-					def previousFile = configRowMapper(Session.sql.firstRow("select * from configfile where name = ${filePath.toString()} order by created desc limit 1"))
+					def previousFile = configRowMapper(sql.firstRow("select * from configfile where name = ${filePath.toString()} order by created desc limit 1"))
 					def isNew = previousFile.isEmpty()
 					def hasChanged = (!isNew && previousFile.md5 != md5)
 					
-					Session.sql.execute("""
+					sql.execute("""
 						insert into ConfigFile (
 							id
 							, scan_id
@@ -90,7 +96,7 @@ class ScanService {
 
 	private def persistProject(String projectName) {
 		def rtn = [:]
-		def row = Session.sql.firstRow("select * from project where name = ${projectName}")
+		def row = sql.firstRow("select * from project where name = ${projectName}")
 		if (row) {
 			rtn.with {
 				id = row.id
@@ -101,7 +107,7 @@ class ScanService {
 		else {
 			def newId = UUID.randomUUID().toString()
 			def time = new Date().time
-			Session.sql.execute("insert into project (id, name, created) values (${newId}, ${projectName}, ${time})")
+			sql.execute("insert into project (id, name, created) values (${newId}, ${projectName}, ${time})")
 			rtn.id = newId
 			rtn.name = projectName
 			rtn.created = time
@@ -113,7 +119,7 @@ class ScanService {
 		def id = UUID.randomUUID().toString()
 		def date = new Date().time
 		def deployTime = new Date().time
-		Session.sql.execute("""
+		sql.execute("""
 			insert into scan (
 				id
 				, project_id

@@ -5,6 +5,9 @@ import starslam.Bootstrapper
 class TestBase extends TestCase {
 	protected final def DBURL = 'jdbc:h2:~/star-slam-test'
 	protected Sql sql
+	protected Closure getConnection = {
+		Sql.newInstance(DBURL, '', '', 'org.h2.Driver')
+	}
 	
 	protected void onPreSetup() {}
 	protected void onPostSetup() {}
@@ -14,7 +17,7 @@ class TestBase extends TestCase {
 	public final void setUp() {
 		onPreSetup()
 		if (!porpoised) { new Bootstrapper().porpoise(DBURL) ; porpoised = true }
-		sql = Sql.newInstance(DBURL, '', '', 'org.h2.Driver')
+		sql = getConnection()
 		cleanUpDatabase()
 		onPostSetup()
 	}
