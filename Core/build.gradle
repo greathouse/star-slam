@@ -8,6 +8,8 @@ buildscript {
   }
 }
 
+apply plugin: "eclipse"
+
 repositories {
   maven { url "http://oss.jfrog.org/repo" }
   mavenCentral()

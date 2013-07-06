@@ -12,6 +12,10 @@ ratpack {
             get(TemplateRenderer).render "index.html", title: "Groovy Web Console" 
         }
 		
+		get("blog") {
+			get(TemplateRenderer).render "blog.html"
+		}
+		
 		post("blah") {
 			
 			response.send "application/json", toJson([hello:new ScanService().hello('Robert')])
