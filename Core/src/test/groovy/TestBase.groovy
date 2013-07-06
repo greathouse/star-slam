@@ -2,7 +2,7 @@ import groovy.sql.Sql
 import junit.framework.TestCase
 import starslam.Bootstrapper
 
-class TestBase extends TestCase {
+abstract class TestBase extends TestCase {
 	protected final def DBURL = 'jdbc:h2:~/star-slam-test'
 	protected Sql sql
 	protected Closure getConnection = {

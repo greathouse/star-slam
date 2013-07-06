@@ -12,8 +12,14 @@ import java.security.MessageDigest
 class ScanService {
 	Sql sql
 	
+	public ScanService() {}
+	
 	public ScanService(Closure getConnection) {
 		sql = getConnection()
+	}
+	
+	def hello(you) {
+		"hello ${you}"
 	}
 	
 	def configRowMapper = { it ->

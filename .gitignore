@@ -1,3 +1,5 @@
 *bin/
 *.settings
 Core/src/test/resources/**/*.config
+build/
+.gradle/
