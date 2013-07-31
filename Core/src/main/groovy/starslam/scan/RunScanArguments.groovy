@@ -1,4 +1,4 @@
-package starslam
+package starslam.scan
 
 class RunScanArguments {
 	def projectRoot

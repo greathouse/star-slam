@@ -1,16 +1,15 @@
-import javax.xml.ws.WebEndpoint;
-
-import starslam.RunScanArguments
-import starslam.ScanService
+package starslam.scan
 import java.nio.file.*
+
+import starslam.TestBase
 
 
 class ScanProjectTest extends TestBase {
 	def S = System.getProperty("file.separator")
-	ScanService scanService
+	IScanService scanService
 	
 	protected void onPostSetup() {
-		scanService = new ScanService(getConnection)
+		scanService = new ScanService(conn)
 	}
 	
 	private Path createProjectRoot(String name) {

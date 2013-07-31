@@ -1,25 +1,34 @@
-package starslam
+package starslam.scan
 
 import groovy.sql.Sql
-import java.nio.file.attribute.BasicFileAttributes
+
 import java.nio.file.*
-import java.nio.file.Path
-import java.nio.file.Paths
-import java.nio.file.FileVisitResult
-import java.nio.file.SimpleFileVisitor
+import java.nio.file.attribute.BasicFileAttributes
 import java.security.MessageDigest
 
-class ScanService {
+import starslam.IDbConnection
+
+import com.google.inject.Inject
+import com.google.inject.name.Named
+
+class ScanService implements IScanService {
 	Sql sql
 	
-	public ScanService() {}
-	
-	public ScanService(Closure getConnection) {
-		sql = getConnection()
+	public ScanService(IDbConnection conn) {
+		sql = conn.getConnection()
 	}
 	
-	def hello(you) {
-		"hello ${you}"
+	@Inject
+	public ScanService(@Named("JDBC_URL") String dbUrl) {
+		this({
+			Sql.newInstance(dbUrl, '', '', 'org.h2.Driver')
+			} as IDbConnection
+		)
+	}
+	
+	int countScans() {
+		def row = sql.firstRow("select count(*) cnt from scan where project_id")
+		return row.cnt
 	}
 	
 	def configRowMapper = { it ->
@@ -61,7 +70,7 @@ class ScanService {
 		rtn.with {
 			name = projectRow.name
 			created = projectRow.created
-			projectRoot = scanRow.directory
+			projectRoot = scanRow.root_path
 			configFilePattern = scanRow.config_file_pattern
 			sqlFileDirectory = scanRow.sql_file_directory
 			deployTime = scanRow.deploy_time

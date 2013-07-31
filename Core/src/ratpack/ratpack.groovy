@@ -1,4 +1,3 @@
-//import groovywebconsole.ScriptExecutor
 import org.ratpackframework.groovy.templating.TemplateRenderer
 
 import static groovy.json.JsonOutput.toJson
@@ -20,17 +19,7 @@ ratpack {
 			
 			response.send "application/json", toJson([hello:new ScanService().hello('Robert')])
 		}
-/*
-        post("execute") {
-            def script = request.form.script
-            def result = new ScriptExecutor().execute(script)
-            response.send "application/json", toJson(result)
-        }
 
-        get("reloadexample") {
-            response.send new ReloadingThing().toString()
-        }
-*/
         assets "public"
     }
 }

@@ -1,13 +1,13 @@
+package starslam
 import groovy.sql.Sql
 import junit.framework.TestCase
-import starslam.Bootstrapper
 
 abstract class TestBase extends TestCase {
 	protected final def DBURL = 'jdbc:h2:~/star-slam-test'
 	protected Sql sql
-	protected Closure getConnection = {
+	protected IDbConnection conn = {
 		Sql.newInstance(DBURL, '', '', 'org.h2.Driver')
-	}
+	} as IDbConnection
 	
 	protected void onPreSetup() {}
 	protected void onPostSetup() {}
@@ -17,7 +17,7 @@ abstract class TestBase extends TestCase {
 	public final void setUp() {
 		onPreSetup()
 		if (!porpoised) { new Bootstrapper().porpoise(DBURL) ; porpoised = true }
-		sql = getConnection()
+		sql = conn.getConnection()
 		cleanUpDatabase()
 		onPostSetup()
 	}
