@@ -4,7 +4,7 @@ class ProjectServiceIProjectStoreTest extends IProjectStoreTestBase {
 
 	@Override
 	protected IProjectStore createInstance() {
-		return new ProjectService()
+		return new ProjectService(conn)
 	}
 
 }

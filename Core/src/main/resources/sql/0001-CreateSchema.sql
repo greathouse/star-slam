@@ -2,9 +2,7 @@ create table Project (
 	ID varchar(50) not null,
 	NAME varchar(500) not null,
 	CREATED BIGINT not null,
-	ROOT_PATH varchar(100) not null,
-	CONFIG_FILE_PATTERN varchar(100),
-	SQL_FILE_DIRECTORY varchar(100)
+	ROOT_PATH varchar(100) not null
 );
 create primary key on project (id);
 create unique index project_name_uidx on project (name);

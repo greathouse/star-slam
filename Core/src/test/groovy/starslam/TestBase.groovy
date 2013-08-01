@@ -24,9 +24,7 @@ abstract class TestBase extends TestCase {
 	
 	private void cleanUpDatabase() {
 		[
-			'SqlFile'
-			, 'ConfigFile'
-			, 'Scan'
+			'Scan'
 			, 'Project'
 		].each {
 			sql.execute("delete from ${it}".toString())
