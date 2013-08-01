@@ -19,33 +19,6 @@ create table Scan (
 create primary key on Scan (id);
 alter table Scan add foreign key (project_id) references project(id);
 
-create table ConfigFile (
-	ID varchar(50) not null,
-	SCAN_ID varchar(50) not null,
-	CREATED bigint not null,
-	NAME varchar(500) not null,
-	MD5 varchar(32) not null,
-	IS_NEW boolean not null,
-	HAS_CHANGED boolean not null
-);
-create primary key on ConfigFile (id);
-alter table ConfigFile add foreign key (scan_id) references scan(id);
-
-create table SqlFile (
-	ID varchar(50) not null,
-	SCAN_ID varchar(50) not null,
-	CREATED bigint not null,
-	NAME varchar(500) not null,
-	MD5 varchar(32) not null,
-	IS_NEW boolean not null
-);
-create primary key on SqlFile (id);
-alter table SqlFile add foreign key (scan_id) references scan(id);
-
-
-
 --down
-drop table ScanConfig;
-drop table ConfigFile;
 drop table Scan;
 drop table Project;

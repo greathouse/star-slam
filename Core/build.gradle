@@ -1,3 +1,8 @@
+apply plugin: 'eclipse'
+apply plugin: 'maven'
+
+def localMavenRepo = 'file://' + new File(System.getProperty('user.home'), '.m2/repository').absolutePath
+
 buildscript {
   repositories {
     maven { url "http://oss.jfrog.org/repo" }
@@ -8,9 +13,9 @@ buildscript {
   }
 }
 
-apply plugin: "eclipse"
 
 repositories {
+  mavenRepo url: localMavenRepo
   maven { url "http://oss.jfrog.org/repo" }
   mavenCentral()
   maven { url "http://repo.springsource.org/repo" } // for springloaded
@@ -20,23 +25,13 @@ repositories {
 // See: http://gradle.org/docs/current/userguide/application_plugin.html
 apply plugin: "ratpack-groovy"
 
-// The ratpack plugin is IDEA aware.
-// It will create a run configuration in IDEA to launch your app in your IDE, with hot reloading.
-apply plugin: "idea"
-idea {
-    project {
-        jdkName "1.7"
-        languageLevel "1.7"
-    }
-}
-
 dependencies {
-    // SpringLoaded enables runtime hot reloading.
-    // It is not part of the app runtime and is not shipped in the distribution.
-    springloaded "org.springsource.springloaded:springloaded-core:1.1.1"
 	testCompile 'junit:junit:4.11'
 	compile 'commons-cli:commons-cli:1.1'
 	compile 'com.h2database:h2:1.3.172'
+	compile group: 'com.greenmoonsoftware', name: 'green-tea-test', version: '1.0-SNAPSHOT'
+	compile 'org.codehaus.groovy:groovy-all:2.1.6'
+	compile 'org.ratpack-framework:ratpack-guice:0.9.0-SNAPSHOT'
 }
 
 run {

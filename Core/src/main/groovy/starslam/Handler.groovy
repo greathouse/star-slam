@@ -8,26 +8,20 @@ import org.ratpackframework.groovy.templating.internal.GroovyTemplateRenderingEn
 import org.ratpackframework.handling.Chain
 import org.ratpackframework.util.Action
 
-import starslam.web.ScanListHandler
 import starslam.web.assets.AssetHandler
+import starslam.web.project.Post
 
 class Handler implements Action<Chain> {
-	
-	final String TEMPLATE_PATH
-	final def RENDERING_ENGINE
-	
 	public Handler(){
 		this(System.properties['user.dir'])
 	}
 	
 	public Handler(String templatePath) {
-		TEMPLATE_PATH = templatePath
-		RENDERING_ENGINE = new GroovyTemplateRenderingEngine(new DefaultTemplatingConfig(TEMPLATE_PATH, 500, true))
 	}
 	
 	@Override
 	public void execute(Chain handlers) {
-		handlers.add(get("scans", handler(ScanListHandler.class)))
+		handlers.add(post("project", handler(Post.class)))
 		
 		handlers.add(handler(AssetHandler.class))
 //		handlers.add(

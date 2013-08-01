@@ -3,6 +3,7 @@ package starslam
 import org.ratpackframework.guice.ModuleRegistry
 import org.ratpackframework.util.Action
 
+import starslam.project.ProjectModule;
 import starslam.scan.ScanModule
 
 class ModuleBootstrap implements Action<ModuleRegistry> {
@@ -14,7 +15,9 @@ class ModuleBootstrap implements Action<ModuleRegistry> {
 	
 	@Override
 	public void execute(ModuleRegistry moduleRegistry) {
-		moduleRegistry.register(new ScanModule(dbUrl))
+		moduleRegistry.register(new DefaultModule(dbUrl))
+		moduleRegistry.register(new ScanModule())
+		moduleRegistry.register(new ProjectModule())
 	}
 
 }
