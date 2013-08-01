@@ -12,7 +12,7 @@ import starslam.ModuleBootstrap
 import starslam.TestBase
 
 abstract class WebTestBase extends TestBase {
-	private RatpackServer ratpackServer
+	private static RatpackServer ratpackServer
 	
 	@Override
 	protected void onPostSetup() {
