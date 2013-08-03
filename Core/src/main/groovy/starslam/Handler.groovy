@@ -3,13 +3,11 @@ package starslam
 import static org.ratpackframework.guice.Guice.handler
 import static org.ratpackframework.handling.Handlers.*
 
-import org.ratpackframework.groovy.templating.internal.DefaultTemplatingConfig
-import org.ratpackframework.groovy.templating.internal.GroovyTemplateRenderingEngine
 import org.ratpackframework.handling.Chain
 import org.ratpackframework.util.Action
 
 import starslam.web.assets.AssetHandler
-import starslam.web.project.Post
+import starslam.web.project.ProjectApi
 
 class Handler implements Action<Chain> {
 	public Handler(){
@@ -21,9 +19,9 @@ class Handler implements Action<Chain> {
 	
 	@Override
 	public void execute(Chain handlers) {
-		handlers.add(post("project", handler(Post.class)))
-		
-		handlers.add(handler(AssetHandler.class))
+		handlers.add(handler(ProjectApi))
+				
+		handlers.add(handler(AssetHandler))
 //		handlers.add(
 //			ClosureHandlers.get {
 //				new DefaultTemplateRenderer(new File(TEMPLATE_PATH),it, RENDERING_ENGINE).render "index.html", title: "Index"

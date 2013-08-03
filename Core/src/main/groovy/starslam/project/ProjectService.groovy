@@ -11,7 +11,6 @@ class ProjectService implements IProjectStore {
 		return new Project([
 			id:it.id
 			, name:it.name
-			, created:new Date(it.created)
 			, rootPath:it.root_path
 		])
 	}
@@ -35,14 +34,12 @@ class ProjectService implements IProjectStore {
 					merge into Project (
 						id
 						, name
-						, created
 						, root_path
 					)
 					key (id)
 					values (
 						${id}
 						, ${project.name}
-						, ${project.created.time}
 						, ${project.rootPath}
 					)
 				""")
@@ -55,8 +52,21 @@ class ProjectService implements IProjectStore {
 	public Project retrieve(String projectId) {
 		use(OpenDatabase) { 
 			dbConnector.getConnection() { sql ->
-				def row = sql.firstRow("select id, name, created, root_path from project where id = ${projectId}")
+				def row = sql.firstRow("select id, name, root_path from project where id = ${projectId}")
 				return (row == null) ? null : projectRowMapper(row)
+			}
+		}
+	}
+
+	@Override
+	public Iterable<Project> list() {
+		use(OpenDatabase) {
+			dbConnector.getConnection { sql ->
+				def rtn = []
+				sql.eachRow("select id, name, root_path from project") {
+					rtn.add(projectRowMapper(it))
+				}
+				return rtn;
 			}
 		}
 	}

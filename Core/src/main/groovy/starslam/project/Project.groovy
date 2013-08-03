@@ -6,6 +6,5 @@ import groovy.transform.Immutable
 class Project {
 	String id
 	String name
-	Date created
 	String rootPath
 }

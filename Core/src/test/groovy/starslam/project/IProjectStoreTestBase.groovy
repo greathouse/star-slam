@@ -18,10 +18,9 @@ abstract class IProjectStoreTestBase extends TestBase {
 		assert retrieve != null
 		assert persist.is(retrieve) == false
 		assert persist.name == retrieve.name
-		assert persist.created == retrieve.created
 		assert persist.rootPath == retrieve.rootPath
 		
-		def saveMe = new Project([id:retrieve.id, name:"Updated-"+UUID.randomUUID().toString(), created:retrieve.created, rootPath:"C:/updated"])
+		def saveMe = new Project([id:retrieve.id, name:"Updated-"+UUID.randomUUID().toString(), rootPath:"C:/updated"])
 		def updateId = impl.persist(saveMe)
 		assert projectId == updateId
 
@@ -35,7 +34,6 @@ abstract class IProjectStoreTestBase extends TestBase {
 	public void testCreateReadUpdate() {
 		def persist = new Project([
 			name:"Test Name"
-			, created: new Date()
 			, rootPath:"C:/here"
 		])
 		
@@ -45,13 +43,11 @@ abstract class IProjectStoreTestBase extends TestBase {
 	public void testCreateMultiple() {
 		def persist1 = new Project([
 			name:"Test Name"
-			, created: new Date()
 			, rootPath:"C:/first"
 		])
 		
 		def persist2 = new Project([
 			name:"Second"
-			, created: new Date()
 			, rootPath:"C:/second"
 		])
 		
@@ -62,7 +58,6 @@ abstract class IProjectStoreTestBase extends TestBase {
 	public void test_SameProjectName_ThrowsException() {
 		def saveTwice = new Project([
 			name:"Test Name"
-			, created: new Date()
 			, rootPath:"C:/first"
 		])
 		
@@ -75,5 +70,24 @@ abstract class IProjectStoreTestBase extends TestBase {
 		catch (DuplicateProjectNameException e) {
 			assert true
 		}
+	}
+	
+	private Project create(String name) {
+		def rtn = new Project([name:name, rootPath:"c:/${name}"])
+		impl.persist(rtn)
+		return rtn
+	}
+	
+	public void test_List() {
+		def e1 = create("Test 1")
+		def e2 = create("Test 2")
+		def e3 = create("Test 3")
+		
+		def actual = impl.list()
+		
+		assert actual.size == 3
+		assert actual[0].name == e1.name
+		assert actual[1].name == e2.name
+		assert actual[2].name == e3.name
 	}
 }
