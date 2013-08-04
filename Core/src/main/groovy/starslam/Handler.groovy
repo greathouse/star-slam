@@ -8,6 +8,7 @@ import org.ratpackframework.util.Action
 
 import starslam.web.assets.AssetHandler
 import starslam.web.project.ProjectApi
+import starslam.web.scan.ScanApi
 
 class Handler implements Action<Chain> {
 	public Handler(){
@@ -19,7 +20,9 @@ class Handler implements Action<Chain> {
 	
 	@Override
 	public void execute(Chain handlers) {
-		handlers.add(handler(ProjectApi))
+		handlers.add(path("projects/:projectId/scans", Arrays.asList(put(), handler(ScanApi))))
+		handlers.add(path("projects/:id", handler(ProjectApi)))
+		handlers.add(path("projects",handler(ProjectApi)))
 				
 		handlers.add(handler(AssetHandler))
 //		handlers.add(

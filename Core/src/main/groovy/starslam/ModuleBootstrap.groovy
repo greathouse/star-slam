@@ -3,7 +3,7 @@ package starslam
 import org.ratpackframework.guice.ModuleRegistry
 import org.ratpackframework.util.Action
 
-import starslam.project.ProjectModule;
+import starslam.project.ProjectModule
 import starslam.scan.ScanModule
 
 class ModuleBootstrap implements Action<ModuleRegistry> {

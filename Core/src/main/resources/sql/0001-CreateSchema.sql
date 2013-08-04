@@ -10,13 +10,26 @@ create table Scan (
 	ID varchar(50) not null,
 	PROJECT_ID varchar(50) not null,
 	CREATED BIGINT not null,
+	COMPLETED BIGINT,
 	ROOT_PATH varchar(100) not null,
-	CONFIG_FILE_PATTERN varchar(100),
-	SQL_FILE_DIRECTORY varchar(100),
-	DEPLOY_TIME bigint not null
+	PRODUCTION_DATE bigint,
+	PROCESSING_TIME int not null,
+	STATUS int not null
 );
 create primary key on Scan (id);
 alter table Scan add foreign key (project_id) references project(id);
+
+create table ScannedFile (
+	ID varchar(50) not null,
+	SCAN_ID varchar(50) not null,
+	FILENAME varchar(100) not null,
+	FULLPATH varchar(500) not null,
+	IS_NEW boolean not null,
+	HAS_CHANGED boolean not null,
+	DATA clob,
+	SCANNER varchar(50) not null,
+	MD5 varchar(32) not null
+)
 
 --down
 drop table Scan;

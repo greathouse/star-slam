@@ -17,7 +17,9 @@ class ProjectsApiTest extends WebTestBase {
 			.verifyResponse { json ->
 				assert json.success
 				assert json.id != null
-				assert json.address != null
+			}
+			.verifyHeaders { headers ->
+				assert headers."Location" != null
 			}
 		} 
 	}
@@ -53,8 +55,8 @@ class ProjectsApiTest extends WebTestBase {
 		Kettle.withTea { tea ->
 			tea.post(URL, project)
 			.expectStatus(200)
-			.verifyResponse { json ->
-				viewUrl = json.address
+			.verifyHeaders { headers ->
+				viewUrl = headers."Location"
 			}
 		}
 		
@@ -91,7 +93,6 @@ class ProjectsApiTest extends WebTestBase {
 		
 		Kettle.withTea { tea ->
 			tea.get(URL)
-			.log()
 			.expectStatus(200)
 			.verifyResponse { json ->
 				assert json.size() == 3

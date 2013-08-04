@@ -2,13 +2,11 @@ package starslam.project
 
 import starslam.TestBase
 
-abstract class IProjectStoreTestBase extends TestBase {
+class IProjectStoreTest extends TestBase {
 	IProjectStore impl
 	
-	protected abstract IProjectStore createInstance()
-	
 	protected void onPostSetup() {
-		impl = createInstance()
+		impl = injector.getInstance(IProjectStore)
 	}
 	
 	private void saveRetrieveUpdate(Project persist) {
