@@ -5,8 +5,9 @@ import starslam.OpenDatabase
 
 import com.google.inject.Inject
 
-class ProjectService implements IProjectStore {
-	IDbConnection dbConnector
+final class ProjectService implements IProjectStore {
+	final IDbConnection dbConnector
+	
 	final def projectRowMapper = { it ->
 		return new Project([
 			id:it.id
@@ -23,7 +24,7 @@ class ProjectService implements IProjectStore {
 	@Override
 	public String persist(Project project) {
 		use(OpenDatabase) {
-			dbConnector.getConnection() { sql ->
+			dbConnector.getConnection { sql ->
 				def existing = sql.firstRow("select '1' from Project where name = ${project.name} and id <> ${project.id}")
 				if (existing) {
 					throw new DuplicateProjectNameException("There already exists a project named \"${project.name}\"")
@@ -51,7 +52,7 @@ class ProjectService implements IProjectStore {
 	@Override
 	public Project retrieve(String projectId) {
 		use(OpenDatabase) { 
-			dbConnector.getConnection() { sql ->
+			dbConnector.getConnection { sql ->
 				def row = sql.firstRow("select id, name, root_path from project where id = ${projectId}")
 				return (row == null) ? null : projectRowMapper(row)
 			}

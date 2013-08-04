@@ -1,12 +1,14 @@
 package starslam
 import groovy.sql.Sql
 import junit.framework.TestCase
+import starslam.project.ProjectModule
+import starslam.scan.ScanModule
 
 import com.google.inject.Guice
 import com.google.inject.Injector
 
 abstract class TestBase extends TestCase {
-	protected final def DBURL = 'jdbc:h2:~/star-slam-test'
+	protected final def DBURL = 'jdbc:h2:~/star-slam/star-slam-test'
 	protected Sql sql
 	protected IDbConnection conn = {
 		Sql.newInstance(DBURL, '', '', 'org.h2.Driver')
@@ -24,7 +26,11 @@ abstract class TestBase extends TestCase {
 		if (!porpoised) { new Bootstrapper().porpoise(DBURL) ; porpoised = true }
 		sql = conn.getConnection()
 		cleanUpDatabase()
-		injector = Guice.createInjector(new DefaultTestModule())
+		injector = Guice.createInjector(
+			new DefaultTestModule(DBURL)
+			, new ProjectModule()
+			, new ScanModule()
+		)
 		onPostSetup()
 	}
 	

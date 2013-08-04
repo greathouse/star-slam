@@ -6,6 +6,7 @@ class ScanModule extends AbstractModule {
 	@Override
 	protected void configure() {
 		bind(IScanService).to(ScanService)
+		bind(IScanStore).to(ScanStore)
 	}
 
 }

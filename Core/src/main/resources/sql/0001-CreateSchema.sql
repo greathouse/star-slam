@@ -13,7 +13,7 @@ create table Scan (
 	COMPLETED BIGINT,
 	ROOT_PATH varchar(100) not null,
 	PRODUCTION_DATE bigint,
-	PROCESSING_TIME int not null,
+	PROCESSING_TIME BIGINT not null,
 	STATUS int not null
 );
 create primary key on Scan (id);
@@ -29,8 +29,11 @@ create table ScannedFile (
 	DATA clob,
 	SCANNER varchar(50) not null,
 	MD5 varchar(32) not null
-)
+);
+create primary key on ScannedFile (id);
+alter table ScannedFile add foreign key (scan_id) references Scan(id);
 
 --down
+drop table ScannedFile;
 drop table Scan;
 drop table Project;

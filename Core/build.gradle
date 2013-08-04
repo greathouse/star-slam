@@ -1,5 +1,6 @@
 apply plugin: 'eclipse'
 apply plugin: 'maven'
+apply plugin: 'groovy'
 
 def localMavenRepo = 'file://' + new File(System.getProperty('user.home'), '.m2/repository').absolutePath
 
