@@ -14,7 +14,7 @@ class DefaultTestModule extends AbstractModule {
 	final String DBURL
 	
 	public DefaultTestModule(String dbUrl) {
-		DBURL = dbUrl
+		DBURL = dbUrl 
 	}
 	
 	@Override

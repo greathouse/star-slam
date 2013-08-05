@@ -23,6 +23,7 @@ create table ScannedFile (
 	ID varchar(50) not null,
 	SCAN_ID varchar(50) not null,
 	FILENAME varchar(100) not null,
+	RELATIVE_PATH varchar(500) not null,
 	FULLPATH varchar(500) not null,
 	IS_NEW boolean not null,
 	HAS_CHANGED boolean not null,
