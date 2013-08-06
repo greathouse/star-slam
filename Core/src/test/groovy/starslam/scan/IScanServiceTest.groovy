@@ -9,10 +9,12 @@ import com.google.common.io.Files
 class IScanServiceTest extends TestBase {
 	private IScanService impl
 	private IProjectStore projectStore
+	private IScanStore scanStore
 	
 	protected void onPostSetup() {
 		impl = injector.getInstance(IScanService)
 		projectStore = injector.getInstance(IProjectStore)
+		scanStore = injector.getInstance(IScanStore)
 	}
 	
 	private String createProject(String rootPath) {
@@ -35,7 +37,7 @@ class IScanServiceTest extends TestBase {
 		return textFile
 	}
 	
-	public void test_Initiate_ShouldReturnScanInfo() {
+	public void test_Initiate_ShouldReturnScanInfo_AndBeRetrievableFromTheScanStore() {
 		def rootPath = rootPath().toString()
 		def projectId = createProject(rootPath)
 		
@@ -45,6 +47,10 @@ class IScanServiceTest extends TestBase {
 		assert projectId == actual.projectId
 		assert actual.initiatedTime != null
 		assert rootPath == actual.rootPath
+		
+		def retrieved = scanStore.retrieveLatestScanForProject(projectId)
+		assert retrieved != null
+		assert actual.id == retrieved.id
 	}
 	
 	public void test_Initiate_ShouldCallOnBegin() {
@@ -56,6 +62,7 @@ class IScanServiceTest extends TestBase {
 		
 		assert calledClosure
 		assert scanInfo != null
+		assert ScanStatus.IN_PROGRESS ==  scanInfo.status
 	}
 	
 	public void test_Initiate_ShouldCallOnComplete() {
@@ -113,17 +120,17 @@ class IScanServiceTest extends TestBase {
 		assert filecount == 1
 	}
 	
-//	public void test_Initiate_MultipleInitiates_ScannedFileShouldNotBeNewOrChanged() {
-//		def path = rootPath()
-//		def file = createFile(path, ".txt")
-//		def projectId = createProject(path.toString())
-//		impl.initiate(projectId, {}, {}, {}) //first time
-//		
-//		def scannedFile = null
-//		impl.initiate(projectId, {}, { x -> scannedFile = x }, {})
-//		
-//		assert scannedFile != null
-//		assert scannedFile.isNew == false
-//		assert scannedFile.hasChanged == false
-//	}
+	public void test_Initiate_MultipleInitiates_ScannedFileShouldNotBeNewOrChanged() {
+		def path = rootPath()
+		def file = createFile(path, ".txt")
+		def projectId = createProject(path.toString())
+		impl.initiate(projectId, {}, {}, {}) //first time
+		
+		def scannedFile = null
+		impl.initiate(projectId, {}, { x -> scannedFile = x }, {})
+		
+		assert scannedFile != null
+		assert scannedFile.isNew == false
+		assert scannedFile.hasChanged == false
+	}
 }

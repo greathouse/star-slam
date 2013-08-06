@@ -13,7 +13,7 @@ create table Scan (
 	COMPLETED BIGINT,
 	ROOT_PATH varchar(100) not null,
 	PRODUCTION_DATE bigint,
-	PROCESSING_TIME BIGINT not null,
+	PROCESSING_TIME BIGINT,
 	STATUS int not null
 );
 create primary key on Scan (id);

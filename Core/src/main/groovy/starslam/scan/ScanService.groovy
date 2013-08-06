@@ -11,13 +11,15 @@ import starslam.project.IProjectStore
 import com.google.inject.Inject
 
 class ScanService implements IScanService {
-	IDbConnection dbConnector
-	IProjectStore projectStore
+	final IDbConnection dbConnector
+	final IProjectStore projectStore
+	final IScanStore scanStore
 	
 	@Inject
-	public ScanService(IDbConnection conn, IProjectStore projectStore) {
+	public ScanService(IDbConnection conn, IProjectStore projectStore, IScanStore scanStore) {
 		dbConnector = conn
 		this.projectStore = projectStore
+		this.scanStore = scanStore
 	}
 	
 	@Override
@@ -27,27 +29,38 @@ class ScanService implements IScanService {
 		Closure<ScannedFile> afterFile, 
 		Closure<ScanInfo> onComplete
 	) {
-		def id = UUID.randomUUID().toString()
 		def project = projectStore.retrieve(projectId)
 		
-		def info = new ScanInfo([
-				id:id
-				, projectId:projectId
+		def scanMap = [
+				projectId:projectId
 				, initiatedTime:new Date()
 				, rootPath:project.rootPath
-			])
+				, status:ScanStatus.IN_PROGRESS
+			]
+		def info = new ScanInfo(scanMap)
+		scanMap.id = scanStore.persist(info)
+		info = new ScanInfo(scanMap)
 		onBegin(info)
 		
 		new File(project.rootPath).eachFileRecurse(FileType.FILES) { file ->
-			def scannedFile = new ScannedFile([
-				scanId:id
+			def md5 = generateMd5(file)
+			def relativePath = file.canonicalPath.replace(project.rootPath, '')
+			def existing = scanStore.retrieveLatestScannedFileWithRelativePath(projectId, relativePath)
+			
+			def scannedFileMap = [
+				scanId:info.id
 				, filename:file.name
 				, fullPath:file.canonicalPath
-				, isNew:true
-				, hasChanged:false
-				, md5:generateMd5(file)
-			])
-			
+				, relativePath:relativePath
+				, isNew:(existing == null)
+				, hasChanged:(existing != null && existing.md5 != md5)
+				, scannerPlugin:"default-txt"
+				, data:"something for now"
+				, md5:md5
+			]
+			def scannedFile = new ScannedFile(scannedFileMap)
+			scannedFileMap.id = scanStore.persist(scannedFile)
+			scannedFile = new ScannedFile(scannedFileMap)
 			afterFile(scannedFile)
 		}
 		

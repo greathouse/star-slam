@@ -14,8 +14,8 @@ final class ScanStore implements IScanStore {
 			id:it.id
 			, projectId:it.project_id
 			, initiatedTime:new Date(it.created)
-			, completionTime:new Date(it.completed)
-			, productionDate:new Date(it.production_date)
+			, completionTime:(it.completed == null)?null:new Date(it.completed)
+			, productionDate:(it.production_date == null)?null:new Date(it.production_date)
 			, rootPath:it.root_path
 			, processingTime:it.processing_time
 			, status:ScanStatus.values()[it.status]
@@ -62,8 +62,8 @@ final class ScanStore implements IScanStore {
 						${id}
 						, ${scan.projectId}
 						, ${scan.initiatedTime.time}
-						, ${scan.completionTime.time}
-						, ${scan.productionDate.time}
+						, ${scan.completionTime?.time}
+						, ${scan.productionDate?.time}
 						, ${scan.rootPath}
 						, ${scan.processingTime}
 						, ${scan.status.ordinal()}

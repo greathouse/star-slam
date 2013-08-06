@@ -63,6 +63,24 @@ class IScanStoreTest extends TestBase {
 		assertScan(scanId, saveMe, scanStore.retrieveScan(scanId))
 	}
 	
+	public void test_Persist_WithOptionalFields_ShouldBeRetrieved() {
+		def projectId = createProject()
+		def expected = new ScanInfo([
+			projectId:projectId
+			, initiatedTime:new Date()
+			, rootPath:"c:/"
+			, status:ScanStatus.IN_PROCESS
+		])
+		def scanId = scanStore.persist(expected)
+		
+		def actual = scanStore.retrieveScan(scanId)
+		
+		assert actual != null
+		assert actual.processingTime == 0
+		assert actual.productionDate  == null
+		assert actual.completionTime == null
+	}
+	
 	public void test_Retrieve_NotFound_ShouldReturnNull() {
 		def actual = scanStore.retrieveScan(UUID.randomUUID().toString())
 		assert actual == null

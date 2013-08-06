@@ -1,7 +1,7 @@
 package starslam.scan;
 
 public enum ScanStatus {
-	IN_PROCESS,
+	IN_PROGRESS,
 	COMPLETED,
 	ABORTED,
 	FAILED
