@@ -5,34 +5,41 @@ import starslam.project.ProjectModule
 import starslam.scan.ScanModule
 import starslam.scan.plugins.PluginModule
 
+import com.google.common.io.Files
 import com.google.inject.Guice
 import com.google.inject.Injector
 
 abstract class TestBase extends TestCase {
-	protected final def DBURL = 'jdbc:h2:~/star-slam/star-slam-test'
+	final protected def DBURL = 'jdbc:h2:~/star-slam/star-slam-test'
 	protected Sql sql
-	protected IDbConnection conn = {
+	final protected IDbConnection conn = {
 		Sql.newInstance(DBURL, '', '', 'org.h2.Driver')
 	} as IDbConnection
-	protected Injector injector
-
-
+	
 	protected void onPreSetup() {}
 	protected void onPostSetup() {}
 	
 	private static porpoised = false;
+	private static wired = false;
+	protected static Injector injector
+	protected static File pluginDirectory
 	
 	public final void setUp() {
 		onPreSetup()
 		if (!porpoised) { new Bootstrapper().porpoise(DBURL) ; porpoised = true }
 		sql = conn.getConnection()
 		cleanUpDatabase()
-		injector = Guice.createInjector(
-			new DefaultTestModule(DBURL)
-			, new ProjectModule()
-			, new ScanModule()
-			, new PluginModule(/c:\tmp\plugins/) //TODO: Extract
-		)
+		if (!wired) {
+			pluginDirectory = Files.createTempDir()
+			injector = Guice.createInjector(
+				new DefaultModule(DBURL)
+				, new ProjectModule()
+				, new ScanModule()
+				, new PluginModule(pluginDirectory.canonicalPath)
+			)
+			wired = true
+		}
+		
 		onPostSetup()
 	}
 	

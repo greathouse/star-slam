@@ -1,15 +1,12 @@
 package starslam.scan.plugins
 
-import java.io.File;
 import groovy.transform.Immutable
+import java.io.File;
 
 @Immutable
-class TextPlugin implements IPlugin {
-
-	@Override
-	public String getName() {
-		return "internal-txt.v1";
-	}
+class ExternalPlugin implements IPlugin {
+	String name
+	String executable
 
 	@Override
 	public PluginResponse process(File file) {
