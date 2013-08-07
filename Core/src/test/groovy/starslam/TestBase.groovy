@@ -3,6 +3,7 @@ import groovy.sql.Sql
 import junit.framework.TestCase
 import starslam.project.ProjectModule
 import starslam.scan.ScanModule
+import starslam.scan.plugins.PluginModule
 
 import com.google.inject.Guice
 import com.google.inject.Injector
@@ -30,6 +31,7 @@ abstract class TestBase extends TestCase {
 			new DefaultTestModule(DBURL)
 			, new ProjectModule()
 			, new ScanModule()
+			, new PluginModule(/c:\tmp\plugins/) //TODO: Extract
 		)
 		onPostSetup()
 	}

@@ -33,6 +33,7 @@ dependencies {
 	compile group: 'com.greenmoonsoftware', name: 'green-tea-test', version: '1.0-SNAPSHOT'
 	compile 'org.codehaus.groovy:groovy-all:2.1.6'
 	compile 'org.ratpack-framework:ratpack-guice:0.9.0-SNAPSHOT'
+	compile 'com.google.guava:guava:14.0.1'
 }
 
 run {

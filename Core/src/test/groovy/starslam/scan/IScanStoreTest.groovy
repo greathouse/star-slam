@@ -69,7 +69,7 @@ class IScanStoreTest extends TestBase {
 			projectId:projectId
 			, initiatedTime:new Date()
 			, rootPath:"c:/"
-			, status:ScanStatus.IN_PROCESS
+			, status:ScanStatus.IN_PROGRESS
 		])
 		def scanId = scanStore.persist(expected)
 		
