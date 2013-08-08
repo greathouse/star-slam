@@ -19,7 +19,7 @@ class IPluginServiceTest extends TestBase {
 		return file
 	}
 	
-	private void createPlugin(String name, String filetype, String executable) {
+	private File createPlugin(String name, String filetype, String executable) {
 		def json = [
 			filetype:filetype
 			, name:name
@@ -28,6 +28,7 @@ class IPluginServiceTest extends TestBase {
 		def subdir = new File(pluginDirectory, name)
 		subdir.mkdirs()
 		new File(subdir, "plugin.json").withWriter { w -> w.write(toJson(json)) }
+		return subdir
 	}
 	
 	public void test_Get_Txt_ShouldReturnDefaultTextFilePlugin() {
@@ -58,5 +59,28 @@ class IPluginServiceTest extends TestBase {
 		
 		assert actual != null
 		assert pluginName == actual.name
+	}
+	
+	private File copyPluginExecutable() {
+		def pluginSubdir = createPlugin("FileInfo.v1", "exe", "FileInfo.exe")
+		def exeStream = ClassLoader.getSystemResourceAsStream("FileInfo.exe")
+		def executableFile = new File(pluginSubdir, "FileInfo.exe")
+		executableFile.withOutputStream { out ->
+			out << exeStream
+		}
+		
+		return executableFile
+	}
+	
+	public void test_ExternalPlugin_RelativePathInJsonFile_ShouldStillExecute() {
+		def executable = copyPluginExecutable()
+		
+		def plugin = impl.get(executable)
+		assert plugin != null
+		
+		def actual = plugin.process(executable)
+		
+		assert actual != null
+		assert actual.data != null
 	}
 }

@@ -24,7 +24,7 @@ class PluginService implements IPluginService {
 				def json = slurper.parse(new FileReader(file))
 				rtn.put(json.filetype, new ExternalPlugin([
 					name:json.name
-					, executable:json.executable
+					, executable:file.parentFile.canonicalPath+"/"+json.executable
 				]))
 			}
 		}
