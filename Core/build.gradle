@@ -36,6 +36,8 @@ dependencies {
 	compile 'org.codehaus.groovy:groovy-all:2.1.6'
 	compile 'org.ratpack-framework:ratpack-guice:0.9.0-SNAPSHOT'
 	compile 'com.google.guava:guava:14.0.1'
+	compile 'org.reflections:reflections:0.9.9-RC1'
+	compile 'org.slf4j:slf4j-api:1.7.5'
 }
 
 run {
