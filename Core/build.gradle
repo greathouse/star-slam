@@ -1,6 +1,7 @@
 apply plugin: 'eclipse'
 apply plugin: 'maven'
 apply plugin: 'groovy'
+apply plugin: 'fatjar'
 
 def localMavenRepo = 'file://' + new File(System.getProperty('user.home'), '.m2/repository').absolutePath
 
@@ -11,6 +12,7 @@ buildscript {
   }
   dependencies {
     classpath 'org.ratpack-framework:ratpack-gradle:0.9.0-SNAPSHOT'
+	classpath 'eu.appsatori:gradle-fatjar-plugin:0.2-rc1'
   }
 }
 

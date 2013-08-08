@@ -8,7 +8,7 @@ namespace FileInfo
 	{
 		public static void Main (string[] args)
 		{
-			FileVersionInfo v = FileVersionInfo.GetVersionInfo("C:\\Users\\kofspades\\Downloads\\Dwolla.Ach.dll");
+			FileVersionInfo v = FileVersionInfo.GetVersionInfo(args[0]);
 
 			var json = string.Format (@"
 {{

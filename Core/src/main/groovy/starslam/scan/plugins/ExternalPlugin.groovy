@@ -10,7 +10,9 @@ class ExternalPlugin implements IPlugin {
 
 	@Override
 	public PluginResponse process(File file) {
-		return null;
+		def process = "${executable} ${file.canonicalPath}".execute()
+		def output = process.text
+		return new PluginResponse(output)
 	}
 
 }

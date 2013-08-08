@@ -1,8 +1,7 @@
-package starslam.scan.plugin
+package starslam.scan.plugins
 
 import static groovy.json.JsonOutput.toJson
 import starslam.TestBase
-import starslam.scan.plugins.IPluginService
 
 import com.google.common.io.Files
 
