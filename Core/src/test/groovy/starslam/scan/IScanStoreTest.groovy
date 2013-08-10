@@ -211,6 +211,9 @@ class IScanStoreTest extends TestBase {
 		assertScannedFile(expectedSecond, actual[1])
 		assertScannedFile(expectedThird, actual[2])
 		assertScannedFile(expectedFourth, actual[3])
+		
+		def actualCount = scanStore.filesForScanCount(scanId)
+		assert actualCount == 4
 	}
 	
 	public void test_FilesForScan_NoFiles_ShouldReturnEmptyList() {

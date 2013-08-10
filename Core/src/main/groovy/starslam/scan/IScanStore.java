@@ -10,4 +10,5 @@ public interface IScanStore {
 	String persist(ScannedFile file);
 	ScannedFile retrieveLatestScannedFileWithRelativePath(String projectId, String path);
 	Iterable<ScannedFile> filesForScan(String scanId);
+	int filesForScanCount(String scanId);
 }

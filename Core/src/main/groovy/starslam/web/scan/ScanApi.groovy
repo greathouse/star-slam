@@ -2,24 +2,43 @@ package starslam.web.scan
 
 import org.ratpackframework.handling.Context
 
+import starslam.scan.IScanService
+import starslam.scan.IScanStore
 import starslam.web.RestApiEndpoint
 
-class ScanApi extends RestApiEndpoint {
+import com.google.inject.Inject
 
+class ScanApi extends RestApiEndpoint {
+	private final IScanService SCAN_SERVICE
+	private final IScanStore SCAN_STORE
+	
+	@Inject
+	public ScanApi(IScanService scanService, IScanStore scanStore) {
+		SCAN_SERVICE = scanService
+		SCAN_STORE = scanStore
+	}
+	
 	@Override
 	protected void get(Context context, String id) {
-		super.get(context, id);
+		def scanInfo = SCAN_STORE.retrieveScan(id)
+		sendJson(context, [
+			rootPath:scanInfo.rootPath
+			, status:scanInfo.status
+			, processingTime:scanInfo.processingTime
+			, initiatedTime:scanInfo.initiatedTime
+			, numberOfFiles:SCAN_STORE.filesForScanCount(id)
+		])
 	}
 
 	@Override
 	protected void post(Context context) {
-		super.post(context);
+		def scanInfo = SCAN_SERVICE.initiate(context.pathTokens.projectId, {  }, {  }) {}
+		header(context, "Location", "/projects/${scanInfo.projectId}/scans/${scanInfo.id}")
+		sendJson(context, scanInfo)
 	}
 
 	@Override
 	protected void list(Context context) {
 		super.list(context);
 	}
-
-
 }

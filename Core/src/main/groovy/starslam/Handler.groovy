@@ -14,7 +14,9 @@ class Handler implements Action<Chain> {
 	
 	@Override
 	public void execute(Chain chain) {
-		chain.add(path("projects/:projectId/scans", Arrays.asList(put(), chain.registry.get(ScanApi))))
+		chain.add(path("projects/:projectId/scans/:id", chain.registry.get(ScanApi)))
+		chain.add(path("projects/:projectId/scans",chain.registry.get(ScanApi)))
+		
 		chain.add(path("projects/:id", chain.registry.get(ProjectApi)))
 		chain.add(path("projects",chain.registry.get(ProjectApi)))
 				

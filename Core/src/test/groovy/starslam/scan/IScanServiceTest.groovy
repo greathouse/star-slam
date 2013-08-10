@@ -21,22 +21,6 @@ class IScanServiceTest extends TestBase {
 		return projectStore.persist(new Project(null, UUID.randomUUID().toString(), rootPath))
 	}
 	
-	private File rootPath() {
-		return Files.createTempDir()
-	}
-	
-	private File createFile(def path, def subdir, def suffix) {
-		def subdirPath = new File(path, subdir)
-		subdirPath.mkdirs()
-		return createFile(subdirPath, suffix)
-	}
-	
-	private File createFile(def path, def suffix) {
-		def textFile = new File(path, UUID.randomUUID().toString()+"${suffix}")
-		Files.touch(textFile)
-		return textFile
-	}
-	
 	public void test_Initiate_ShouldReturnScanInfo_AndBeRetrievableFromTheScanStore() {
 		def rootPath = rootPath().toString()
 		def projectId = createProject(rootPath)

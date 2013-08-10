@@ -1,4 +1,6 @@
 package starslam
+import java.io.File;
+
 import groovy.sql.Sql
 import junit.framework.TestCase
 import starslam.project.ProjectModule
@@ -52,4 +54,21 @@ abstract class TestBase extends TestCase {
 			sql.execute("delete from ${it}".toString())
 		}
 	}
+	
+	protected File rootPath() {
+		return Files.createTempDir()
+	}
+	
+	protected File createFile(def path, def subdir, def suffix) {
+		def subdirPath = new File(path, subdir)
+		subdirPath.mkdirs()
+		return createFile(subdirPath, suffix)
+	}
+	
+	protected File createFile(def path, def suffix) {
+		def textFile = new File(path, UUID.randomUUID().toString()+"${suffix}")
+		Files.touch(textFile)
+		return textFile
+	}
+	
 }

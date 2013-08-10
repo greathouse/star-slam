@@ -177,4 +177,17 @@ final class ScanStore implements IScanStore {
 		}
 	}
 
+	@Override
+	public int filesForScanCount(String scanId) {
+		use(OpenDatabase) {
+			dbConnector.getConnection { sql ->
+				return sql.firstRow("""
+					select count(*) cnt
+					from scannedFile sf
+					where sf.scan_id = ${scanId}
+				""").cnt
+			}
+		}
+	}
+
 }
