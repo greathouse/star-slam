@@ -51,5 +51,13 @@ class ScanApiTest extends WebTestBase {
 				assert json.numberOfFiles != null
 			}
 		}
+		
+		Kettle.withTea { tea ->
+			tea.get(projectUrl+"/scans")
+			.expectStatus(200)
+			.verifyResponse { json ->
+				assert json.size() == 1
+			}
+		}
 	}
 }

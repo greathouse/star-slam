@@ -39,6 +39,7 @@ class ScanApi extends RestApiEndpoint {
 
 	@Override
 	protected void list(Context context) {
-		super.list(context);
+		def scans = SCAN_STORE.scansForProject(context.pathTokens.projectId)
+		sendJson(context, scans)
 	}
 }
