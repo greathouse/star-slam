@@ -2,18 +2,20 @@ package starslam
 
 import static org.ratpackframework.handling.Handlers.*
 
-import org.ratpackframework.guice.ModuleRegistry;
 import org.ratpackframework.handling.Chain
 import org.ratpackframework.util.Action
 
 import starslam.web.assets.AssetHandler
 import starslam.web.project.ProjectApi
 import starslam.web.scan.ScanApi
+import starslam.web.scan.ScanFilesApi
 
 class Handler implements Action<Chain> {
 	
 	@Override
 	public void execute(Chain chain) {
+		chain.add(path("projects/:projectId/scans/:scanId/files",chain.registry.get(ScanFilesApi)))
+		
 		chain.add(path("projects/:projectId/scans/:id", chain.registry.get(ScanApi)))
 		chain.add(path("projects/:projectId/scans",chain.registry.get(ScanApi)))
 		

@@ -7,19 +7,19 @@ import org.ratpackframework.handling.Handler
 abstract class RestApiEndpoint implements Handler {
 
 	protected void get(Context context, String id){
-		status(context, 405).sendJson([success:false, errorMessage:"This method is not implemented"])
+		status(context, 405).sendJson(context, [success:false, errorMessage:"This method is not implemented"])
 	}
 	protected void post(Context context){
-		status(context, 405).sendJson([success:false, errorMessage:"This method is not implemented"])
+		status(context, 405).sendJson(context, [success:false, errorMessage:"This method is not implemented"])
 	}
 	protected void put(Context context, String id){
-		status(context, 405).sendJson([success:false, errorMessage:"This method is not implemented"])
+		status(context, 405).sendJson(context, [success:false, errorMessage:"This method is not implemented"])
 	}
 	protected void delete(Context context, String id){
-		status(context, 405).sendJson([success:false, errorMessage:"This method is not implemented"])
+		status(context, 405).sendJson(context, [success:false, errorMessage:"This method is not implemented"])
 	}
 	protected void list(Context context){
-		status(context, 405).sendJson([success:false, errorMessage:"This method is not implemented"])
+		status(context, 405).sendJson(context, [success:false, errorMessage:"This method is not implemented"])
 	}
 	
 	@Override
