@@ -1,6 +1,7 @@
 package starslam.scan
 
 import groovy.io.FileType
+import groovyx.gpars.GParsExecutorsPool
 
 import java.nio.file.*
 import java.security.MessageDigest
@@ -42,11 +43,11 @@ class ScanService implements IScanService {
 		info = new ScanInfo(scanMap)
 		onBegin(info)
 		
-		new File(project.rootPath).eachFileRecurse(FileType.FILES) { file ->
+		def processFile = { File file ->
 			def md5 = generateMd5(file)
 			def relativePath = file.canonicalPath.replace(project.rootPath, '')
 			def existing = scanStore.retrieveLatestScannedFileWithRelativePath(projectId, relativePath)
-			
+	
 			def scannedFileMap = [
 				scanId:info.id
 				, filename:file.name
@@ -62,6 +63,12 @@ class ScanService implements IScanService {
 			scannedFileMap.id = scanStore.persist(scannedFile)
 			scannedFile = new ScannedFile(scannedFileMap)
 			afterFile(scannedFile)
+		}
+		
+		GParsExecutorsPool.withPool(30) {
+			new File(project.rootPath).eachFileRecurse(FileType.FILES) { file ->
+				processFile.callAsync(file)
+			}
 		}
 		
 		onComplete(info)

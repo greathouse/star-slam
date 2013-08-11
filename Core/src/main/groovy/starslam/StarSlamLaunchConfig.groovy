@@ -2,6 +2,9 @@ package starslam
 
 import static org.ratpackframework.guice.Guice.handler
 import static org.ratpackframework.handling.Handlers.chain
+
+import java.net.URL;
+
 import org.ratpackframework.launch.HandlerFactory
 import org.ratpackframework.launch.LaunchConfig
 
@@ -48,6 +51,10 @@ class StarSlamLaunchConfig implements LaunchConfig {
 	@Override
 	public boolean isReloadable() {
 		return false;
+	}
+	@Override
+	public URL getPublicAddress() {
+		return null;
 	}
 
 }

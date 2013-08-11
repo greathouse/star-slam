@@ -1,10 +1,9 @@
 package starslam.scan
 
+import starslam.AsyncAssert
 import starslam.TestBase
 import starslam.project.IProjectStore
 import starslam.project.Project
-
-import com.google.common.io.Files
 
 class IScanServiceTest extends TestBase {
 	private IScanService impl
@@ -81,15 +80,22 @@ class IScanServiceTest extends TestBase {
 	
 	public void test_Initiate_WithMultipleFilesInRoot_ShouldCallAfterFile() {
 		def path = rootPath()
-		def file1 = createFile(path, ".txt")
-		def file2 = createFile(path, ".txt")
+		def files = []
+		files << createFile(path, ".txt")
+		files << createFile(path, ".txt")
+		files << createFile(path, ".txt")
+		files << createFile(path, ".txt")
+		
 		def projectId = createProject(path.toString())
+		def afterFiles = []
 						
 		def filecount = 0
 		def scannedFile = null
-		def actual = impl.initiate(projectId, {}, { x -> filecount++ }, {})
+		def actual = impl.initiate(projectId, {}, { x -> afterFiles << x }, {})
 		
-		assert filecount == 2
+		AsyncAssert.run {
+			assert afterFiles.size() == files.size()
+		}
 	}
 	
 	public void test_Initiate_WithFilesInSubDirectories_ShouldCallAfterFile() {
