@@ -7,12 +7,18 @@ import com.greenmoonsoftware.tea.Tea
 
 class ProjectsApiTest extends WebTestBase {
 	final String URL = '/projects'
+	
+	private def successfulProjectBody() {
+		[
+			name:"Test1"
+			, rootPath:"C:/whatever"
+			, fileGlob:"*.txt"
+		]
+	}
+	
 	public void test_Success() {
 		Kettle.withTea { tea ->
-			tea.post(URL, [
-				name:"Test1"
-				, rootPath:"C:/whatever"
-			])
+			tea.post(URL, successfulProjectBody())
 			.expectStatus(200)
 			.verifyResponse { json ->
 				assert json.success
@@ -25,10 +31,7 @@ class ProjectsApiTest extends WebTestBase {
 	}
 	
 	public void test_DuplicateName() {
-		def body = [
-					name:"Test1"
-					, rootPath:"C:/whatever"
-				]
+		def body = successfulProjectBody()
 		
 		Kettle.withTea { tea ->
 			tea.post(URL, body)
@@ -48,10 +51,7 @@ class ProjectsApiTest extends WebTestBase {
 	
 	public void test_Update() {
 		def viewUrl
-		def project = [
-					name:"Test1"
-					, rootPath:"C:/whatever"
-				]
+		def project = successfulProjectBody()
 		Kettle.withTea { tea ->
 			tea.post(URL, project)
 			.expectStatus(200)
@@ -61,7 +61,8 @@ class ProjectsApiTest extends WebTestBase {
 		}
 		
 		def updatedPath = "c:/updated"
-		project.rootPath = updatedPath
+		project.rootPath = project.rootPath+"-updatedPath"
+		project.fileGlob = project.fileGlob+"-update"
 		Kettle.withTea { tea ->
 			tea.put(viewUrl, project)
 			.expectStatus(200)
@@ -80,8 +81,11 @@ class ProjectsApiTest extends WebTestBase {
 	}
 	
 	private void create(String name) {
+		def project = successfulProjectBody()
+		project.name = name
+		project.rootPath="c:/${name}".toString()
 		Kettle.withTea { Tea tea ->
-			tea.post(URL, [name:name, rootPath:"c:/${name}".toString()])
+			tea.post(URL, project)
 			.expectStatus(200)
 		}
 	}

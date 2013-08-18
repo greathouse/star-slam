@@ -17,12 +17,17 @@ class IScanServiceTest extends TestBase {
 	}
 	
 	private String createProject(String rootPath) {
-		return projectStore.persist(new Project(null, UUID.randomUUID().toString(), rootPath))
+		return createProject(rootPath, "*.txt")
+	}
+	
+	private String createProject(String rootPath, String fileGlob) {
+		return projectStore.persist(new Project(null, UUID.randomUUID().toString(), rootPath, fileGlob))
 	}
 	
 	public void test_Initiate_ShouldReturnScanInfo_AndBeRetrievableFromTheScanStore() {
 		def rootPath = rootPath().canonicalPath
-		def projectId = createProject(rootPath)
+		def fileGlob = "*.exe"
+		def projectId = createProject(rootPath, fileGlob)
 		
 		def actual = impl.initiate(projectId, {}, {}, {})
 		
@@ -30,6 +35,7 @@ class IScanServiceTest extends TestBase {
 		assert projectId == actual.projectId
 		assert actual.initiatedTime != null
 		assert rootPath == actual.rootPath
+		assert fileGlob == actual.fileGlob
 		
 		def retrieved = scanStore.retrieveLatestScanForProject(projectId)
 		assert retrieved != null

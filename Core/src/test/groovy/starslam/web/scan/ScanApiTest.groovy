@@ -15,6 +15,7 @@ class ScanApiTest extends WebTestBase {
 			tea.post('/projects', [
 				name:"Test1"
 				, rootPath:root.canonicalPath
+				, fileGlob:"*.txt"
 			])
 			.expectStatus(200)
 			.verifyHeaders { headers ->

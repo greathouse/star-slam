@@ -23,7 +23,7 @@ class ProjectApi extends RestApiEndpoint {
 	protected void post(Context context) {
 		def body = new JsonSlurper().parseText(context.request.text)
 		try {
-			def id = projectStore.persist(new Project(null, body.name, body.rootPath))
+			def id = projectStore.persist(new Project(null, body.name, body.rootPath, body.fileGlob))
 			header(context, 'Location', "/"+context.request.path+"/$id")
 			sendJson(context, [
 				success:true, 
@@ -48,9 +48,10 @@ class ProjectApi extends RestApiEndpoint {
 	protected void put(Context context, String id) {
 		def body = new JsonSlurper().parseText(context.request.text)
 		projectStore.persist(new Project([
-				id:id,
-				name:body.name,
-				rootPath:body.rootPath
+				id:id
+				, name:body.name
+				, rootPath:body.rootPath
+				, fileGlob:body.fileGlob
 			]))
 		sendJson(context, [success:true])
 	}

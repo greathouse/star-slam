@@ -46,6 +46,7 @@ class ScanService implements IScanService {
 				, initiatedTime:new Date()
 				, rootPath:project.rootPath
 				, status:ScanStatus.IN_PROGRESS
+				, fileGlob:project.fileGlob
 			]
 		def info = new ScanInfo(scanMap)
 		scanMap.id = scanStore.persist(info)
