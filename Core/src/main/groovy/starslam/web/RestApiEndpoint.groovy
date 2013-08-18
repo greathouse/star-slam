@@ -52,7 +52,7 @@ abstract class RestApiEndpoint implements Handler {
 	}
 	
 	protected final Context header(Context context, String key, String value) {
-		context.response.addHeader(key,  value)
+		context.response.headers.add(key,  value)
 		context
 	}
 	

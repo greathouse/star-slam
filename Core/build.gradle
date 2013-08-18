@@ -39,6 +39,7 @@ dependencies {
 	compile 'org.reflections:reflections:0.9.9-RC1'
 	compile 'org.slf4j:slf4j-api:1.7.5'
 	compile 'org.codehaus.gpars:gpars:1.1.0'
+	compile 'org.apache.ant:ant:1.9.2'
 }
 
 run {

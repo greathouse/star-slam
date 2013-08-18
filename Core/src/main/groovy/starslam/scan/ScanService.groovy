@@ -1,6 +1,5 @@
 package starslam.scan
 
-import groovy.io.FileType
 import groovyx.gpars.actor.Actors
 
 import java.nio.file.*
@@ -89,18 +88,15 @@ class ScanService implements IScanService {
 		}
 		
 		Thread.start {
-			new File(project.rootPath).eachFileRecurse(FileType.FILES) { file ->
-				println file.canonicalPath
-				consumer.send file
-			}
+			def finder = new FileFinder(info.fileGlob, {f -> println f.canonicalFile ; consumer.send f})
+			finder.execute(project.rootPath)
 			consumer.send null
+			
 			consumer.join()
 			println "Everyone's Processed"
 			def endTime = System.currentTimeMillis()
-//			scanMap.with {
-				scanMap.status = ScanStatus.COMPLETED
-				scanMap.processingTime = endTime - startTime 
-//			}
+			scanMap.status = ScanStatus.COMPLETED
+			scanMap.processingTime = endTime - startTime 
 			def completeInfo = new ScanInfo(scanMap)
 			scanStore.persist(completeInfo)
 			onComplete(completeInfo)

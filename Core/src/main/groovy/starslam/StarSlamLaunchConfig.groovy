@@ -2,13 +2,29 @@ package starslam
 
 import static org.ratpackframework.guice.Guice.handler
 import static org.ratpackframework.handling.Handlers.chain
+import io.netty.buffer.ByteBufAllocator
+import io.netty.buffer.UnpooledByteBufAllocator
 
-import java.net.URL;
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 import org.ratpackframework.launch.HandlerFactory
 import org.ratpackframework.launch.LaunchConfig
 
 class StarSlamLaunchConfig implements LaunchConfig {
+	@Override
+	public ExecutorService getBlockingExecutorService() {
+		return Executors.newCachedThreadPool()
+	}
+	@Override
+	public ByteBufAllocator getBufferAllocator() {
+		return UnpooledByteBufAllocator.DEFAULT
+	}
+	@Override
+	public int getMainThreads() {
+		return 10
+	}
+
 	final String DBURL
 	
 	public StarSlamLaunchConfig(String dbUrl) {
@@ -44,16 +60,12 @@ class StarSlamLaunchConfig implements LaunchConfig {
 	}
 
 	@Override
-	public int getWorkerThreads() {
-		return 10;
-	}
-
-	@Override
 	public boolean isReloadable() {
 		return false;
 	}
+	
 	@Override
-	public URL getPublicAddress() {
+	public URI getPublicAddress() {
 		return null;
 	}
 

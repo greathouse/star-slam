@@ -97,12 +97,15 @@ class IScanServiceTest extends TestBase {
 	public void test_Initiate_WithMultipleFilesInRoot_ShouldCallAfterFile() {
 		def path = rootPath()
 		def files = []
-		files << createFile(path, ".txt")
-		files << createFile(path, ".txt")
-		files << createFile(path, ".txt")
-		files << createFile(path, ".txt")
+		def validExtension = ".txt"
+		files << createFile(path, validExtension)
+		files << createFile(path, validExtension)
+		files << createFile(path, validExtension)
+		files << createFile(path, validExtension)
+		def nonMatchFiles = [] 
+		nonMatchFiles << createFile(path, ".exe")
 		
-		def projectId = createProject(path.toString())
+		def projectId = createProject(path.toString(), "*"+validExtension)
 		def afterFiles = []
 						
 		def filecount = 0
@@ -117,7 +120,7 @@ class IScanServiceTest extends TestBase {
 	public void test_Initiate_WithFilesInSubDirectories_ShouldCallAfterFile() {
 		def path = rootPath()
 		def file = createFile(path, "subdir", ".txt")
-		def projectId = createProject(path.toString())
+		def projectId = createProject(path.toString(), 'subdir/*.txt')
 						
 		def filecount = 0
 		def scannedFile = null
@@ -145,6 +148,35 @@ class IScanServiceTest extends TestBase {
 			assert scannedFile != null
 			assert scannedFile.isNew == false
 			assert scannedFile.hasChanged == false
+		}
+	}
+	
+	public void test_Initiate_WithMultipleGlobPattern_ShouldCallAfterFile() {
+		def path = rootPath()
+		def files = []
+		def validExtension1 = ".txt"
+		files << createFile(path, validExtension1)
+		
+		def validExtension2 = ".properties"
+		files << createFile(path, validExtension2)
+		
+		def subdir = "subdir"
+		def filename = "full-file.dll"
+		def fullfile = createFile(path, subdir, ".dll")
+		files << fullfile
+		
+		def nonMatchFiles = []
+		nonMatchFiles << createFile(path, ".exe")
+		
+		def projectId = createProject(path.toString(), "*"+validExtension1+"|*"+validExtension2+"|"+subdir+'/'+fullfile.name)
+		def afterFiles = []
+						
+		def filecount = 0
+		def scannedFile = null
+		def actual = impl.initiate(projectId, {}, { x -> afterFiles << x }, {})
+		
+		AsyncAssert.run {
+			assert afterFiles.size() == files.size()
 		}
 	}
 }

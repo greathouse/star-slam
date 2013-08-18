@@ -1,5 +1,6 @@
 package starslam.web.scan
 
+import starslam.AsyncAssert
 import starslam.web.Kettle
 import starslam.web.WebTestBase
 
@@ -36,18 +37,20 @@ class ScanFilesApiTest extends WebTestBase {
 	public void test_InitiateAndGet() {
 		def scanUrl = setupWorkspace() 
 		
-		Kettle.withTea { tea ->
-			tea.get(scanUrl+"/files")
-			.expectStatus(200)
-			.verifyResponse { json ->
-				assert json.size() == 2
-				
-				def file = json[0]
-				assert file.filename != null
-				assert file.relativePath != null
-				assert file.fullPath != null
-				assert file.isNew
-				assert file.hasChanged == false
+		AsyncAssert.run {
+			Kettle.withTea { tea ->
+				tea.get(scanUrl+"/files")
+				.expectStatus(200)
+				.verifyResponse { json ->
+					assert json.size() == 2
+					
+					def file = json[0]
+					assert file.filename != null
+					assert file.relativePath != null
+					assert file.fullPath != null
+					assert file.isNew
+					assert file.hasChanged == false
+				}
 			}
 		}
 	}
