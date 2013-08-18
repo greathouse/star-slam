@@ -17,7 +17,7 @@ class IScanStoreTest extends TestBase {
 	}
 
 	private String createProject() {
-		return projectStore.persist(new Project(null, UUID.randomUUID().toString(), Files.createTempDir().toString()))
+		return projectStore.persist(new Project(null, UUID.randomUUID().toString(), Files.createTempDir().toString(), UUID.randomUUID().toString()))
 	}
 	
 	private String createScan(String projectId, Date initiated) {
@@ -29,6 +29,7 @@ class IScanStoreTest extends TestBase {
 			, rootPath:"rootPath"
 			, processingTime:System.currentTimeMillis()
 			, status:ScanStatus.COMPLETED
+			, fileGlob:"jar,war,ear,properties,xml"
 		]))
 	}
 	
@@ -42,6 +43,7 @@ class IScanStoreTest extends TestBase {
 		assert expected.productionDate == actual.productionDate
 		assert expected.processingTime == actual.processingTime
 		assert expected.status == actual.status
+		assert expected.fileGlob == actual.fileGlob
 	}
 
 	public void test_PersistAndRetrieve_Success() {
@@ -55,7 +57,8 @@ class IScanStoreTest extends TestBase {
 			, productionDate:new Date().plus(2)
 			, rootPath:"rootPath"
 			, processingTime:System.currentTimeMillis()
-			, status:ScanStatus.COMPLETED		
+			, status:ScanStatus.COMPLETED
+			, fileGlob:"jar,war,ear,properties,xml"
 		])
 		
 		def scanId = scanStore.persist(saveMe)
@@ -70,6 +73,7 @@ class IScanStoreTest extends TestBase {
 			, initiatedTime:new Date()
 			, rootPath:"c:/"
 			, status:ScanStatus.IN_PROGRESS
+			, fileGlob:"jar,war,ear,properties,xml"
 		])
 		def scanId = scanStore.persist(expected)
 		
@@ -99,6 +103,7 @@ class IScanStoreTest extends TestBase {
 			, rootPath:"rootPath"
 			, processingTime:System.currentTimeMillis()
 			, status:ScanStatus.COMPLETED
+			, fileGlob:"jar,war,ear,properties,xml"
 		])
 		def expectedId = scanStore.persist(expected)
 		

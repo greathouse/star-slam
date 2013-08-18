@@ -8,7 +8,7 @@ import com.google.inject.Inject
 final class ScanStore implements IScanStore {
 	final IDbConnection dbConnector
 	
-	final def scanSelect = "id, project_id, created, completed, production_date, root_path, processing_time, status"
+	final def scanSelect = "id, project_id, created, completed, production_date, root_path, processing_time, status, file_glob"
 	final def scanRowMapper = { it ->
 		return new ScanInfo([
 			id:it.id
@@ -19,6 +19,7 @@ final class ScanStore implements IScanStore {
 			, rootPath:it.root_path
 			, processingTime:it.processing_time
 			, status:ScanStatus.values()[it.status]
+			, fileGlob:it.file_glob
 		])
 	}
 	
@@ -57,6 +58,7 @@ final class ScanStore implements IScanStore {
 						, root_path
 						, processing_time
 						, status
+						, file_glob
 					)
 					values (
 						${id}
@@ -67,6 +69,7 @@ final class ScanStore implements IScanStore {
 						, ${scan.rootPath}
 						, ${scan.processingTime}
 						, ${scan.status.ordinal()}
+						, ${scan.fileGlob}
 					)
 				""")
 				return id

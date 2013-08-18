@@ -12,4 +12,5 @@ class ScanInfo {
 	String rootPath
 	long processingTime
 	ScanStatus status
+	String fileGlob
 }

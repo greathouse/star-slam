@@ -15,7 +15,8 @@ create table Scan (
 	ROOT_PATH varchar(100) not null,
 	PRODUCTION_DATE bigint,
 	PROCESSING_TIME BIGINT,
-	STATUS int not null
+	STATUS int not null,
+	FILE_GLOB varchar(100) not null
 );
 create primary key on Scan (id);
 alter table Scan add foreign key (project_id) references project(id);
