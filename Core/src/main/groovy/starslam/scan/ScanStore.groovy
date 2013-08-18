@@ -47,9 +47,9 @@ final class ScanStore implements IScanStore {
 	public String persist(ScanInfo scan) {
 		use(OpenDatabase) {
 			dbConnector.getConnection { sql ->
-				def id = UUID.randomUUID().toString()
+				def id = scan.id?:UUID.randomUUID().toString()
 				sql.execute("""
-					insert into scan(
+					merge into scan(
 						id
 						, project_id
 						, created
@@ -60,6 +60,7 @@ final class ScanStore implements IScanStore {
 						, status
 						, file_glob
 					)
+					key (id)
 					values (
 						${id}
 						, ${scan.projectId}

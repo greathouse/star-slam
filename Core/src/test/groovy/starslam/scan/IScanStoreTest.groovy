@@ -85,6 +85,25 @@ class IScanStoreTest extends TestBase {
 		assert actual.completionTime == null
 	}
 	
+	public void test_Persist_AndUpdate_ShouldOnlyCreateOneScanForTheProject() {
+		def projectId = createProject()
+		def expected = new ScanInfo([
+			projectId:projectId
+			, initiatedTime:new Date()
+			, rootPath:"c:/"
+			, status:ScanStatus.IN_PROGRESS
+			, fileGlob:"jar,war,ear,properties,xml"
+		])
+		def scanId = scanStore.persist(expected)
+		def retrieved = scanStore.retrieveScan(scanId)
+		
+		def secondId = scanStore.persist(retrieved)
+		assert scanId == secondId
+		
+		def actualProjectScans = scanStore.scansForProject(projectId)
+		assert 1 == actualProjectScans.size()
+	}
+	
 	public void test_Retrieve_NotFound_ShouldReturnNull() {
 		def actual = scanStore.retrieveScan(UUID.randomUUID().toString())
 		assert actual == null
