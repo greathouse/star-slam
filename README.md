@@ -1,4 +1,4 @@
-star-slam
+Codename: star-slam
 =========
 Deployment Tracking Service
 
@@ -7,4 +7,11 @@ This project is intended to track the artifacts of software projects deployed to
 * Config File Changes
 * SQL Schema Changes
 
-THIS IS VERY MUCH A WORK IN PROGRESS
+This is currently the pet project du jour.
+
+Technologies in use
+* Groovy - http://groovy.codehaus.org/
+* Ratpack Framework - http://www.ratpack-framework.org/
+* Google Guice - https://code.google.com/p/google-guice/
+
+Fully tested, including REST API endpoints.
