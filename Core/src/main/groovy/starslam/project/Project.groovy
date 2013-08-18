@@ -7,4 +7,5 @@ class Project {
 	String id
 	String name
 	String rootPath
+	String fileGlob
 }

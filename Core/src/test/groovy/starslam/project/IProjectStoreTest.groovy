@@ -17,8 +17,9 @@ class IProjectStoreTest extends TestBase {
 		assert persist.is(retrieve) == false
 		assert persist.name == retrieve.name
 		assert persist.rootPath == retrieve.rootPath
+		assert persist.fileGlob == retrieve.fileGlob
 		
-		def saveMe = new Project([id:retrieve.id, name:"Updated-"+UUID.randomUUID().toString(), rootPath:"C:/updated"])
+		def saveMe = new Project([id:retrieve.id, name:"Updated-"+UUID.randomUUID().toString(), rootPath:"C:/updated", fileGlob:"class"])
 		def updateId = impl.persist(saveMe)
 		assert projectId == updateId
 
@@ -27,12 +28,14 @@ class IProjectStoreTest extends TestBase {
 		assert saveMe.is(updated) == false
 		assert saveMe.name == updated.name
 		assert saveMe.rootPath == updated.rootPath
+		assert saveMe.fileGlob == updated.fileGlob
 	}
 	
 	public void testCreateReadUpdate() {
 		def persist = new Project([
 			name:"Test Name"
 			, rootPath:"C:/here"
+			, fileGlob:"ear,jar,war,properties"
 		])
 		
 		saveRetrieveUpdate(persist)		
@@ -42,11 +45,13 @@ class IProjectStoreTest extends TestBase {
 		def persist1 = new Project([
 			name:"Test Name"
 			, rootPath:"C:/first"
+			, fileGlob:"ear,jar,war,properties"
 		])
 		
 		def persist2 = new Project([
 			name:"Second"
 			, rootPath:"C:/second"
+			, fileGlob:"ear,jar,war,properties"
 		])
 		
 		saveRetrieveUpdate(persist1)
@@ -57,6 +62,7 @@ class IProjectStoreTest extends TestBase {
 		def saveTwice = new Project([
 			name:"Test Name"
 			, rootPath:"C:/first"
+			, fileGlob:"ear,jar,war,properties"
 		])
 		
 		impl.persist(saveTwice)
@@ -71,7 +77,7 @@ class IProjectStoreTest extends TestBase {
 	}
 	
 	private Project create(String name) {
-		def rtn = new Project([name:name, rootPath:"c:/${name}"])
+		def rtn = new Project([name:name, rootPath:"c:/${name}", fileGlob:"ear,jar,war,properties"])
 		impl.persist(rtn)
 		return rtn
 	}

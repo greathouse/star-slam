@@ -21,7 +21,7 @@ class IScanServiceTest extends TestBase {
 	}
 	
 	public void test_Initiate_ShouldReturnScanInfo_AndBeRetrievableFromTheScanStore() {
-		def rootPath = rootPath().toString()
+		def rootPath = rootPath().canonicalPath
 		def projectId = createProject(rootPath)
 		
 		def actual = impl.initiate(projectId, {}, {}, {})
@@ -55,8 +55,16 @@ class IScanServiceTest extends TestBase {
 		def projectId = createProject(rootPath().toString())
 		impl.initiate(projectId, {}, {},{x -> calledClosure = true; scanInfo = x })
 		
-		assert calledClosure
-		assert scanInfo != null
+		AsyncAssert.run {
+			assert calledClosure
+			assert scanInfo != null
+			assert scanInfo.status == ScanStatus.COMPLETED
+			
+			def retrieved = scanStore.retrieveScan(scanInfo.id)
+			assert retrieved != null
+			assert retrieved.status == ScanStatus.COMPLETED
+			assert retrieved.processingTime > 0
+		}
 	}
 	
 	public void test_Initiate_ShouldCallAfterFile() {
@@ -68,14 +76,16 @@ class IScanServiceTest extends TestBase {
 		def scannedFile = null
 		def actual = impl.initiate(projectId, {}, { x -> filecount++ ; scannedFile = x }, {})
 		
-		assert filecount == 1
-		assert scannedFile != null
-		assert actual.id == scannedFile.scanId
-		assert file.name == scannedFile.filename
-		assert file.canonicalPath == scannedFile.fullPath
-		assert scannedFile.isNew
-		assert scannedFile.hasChanged == false
-		assert scannedFile.md5 != null
+		AsyncAssert.run {
+			assert filecount == 1
+			assert scannedFile != null
+			assert actual.id == scannedFile.scanId
+			assert file.name == scannedFile.filename
+			assert file.canonicalPath == scannedFile.fullPath
+			assert scannedFile.isNew
+			assert scannedFile.hasChanged == false
+			assert scannedFile.md5 != null
+		}
 	}
 	
 	public void test_Initiate_WithMultipleFilesInRoot_ShouldCallAfterFile() {
@@ -107,20 +117,28 @@ class IScanServiceTest extends TestBase {
 		def scannedFile = null
 		def actual = impl.initiate(projectId, {}, { x -> filecount++ ; scannedFile = x }, {})
 		
-		assert filecount == 1
+		AsyncAssert.run {
+			assert filecount == 1
+		}
 	}
 	
 	public void test_Initiate_MultipleInitiates_ScannedFileShouldNotBeNewOrChanged() {
-		def path = rootPath()
+		def path = rootPath().canonicalPath
 		def file = createFile(path, ".txt")
 		def projectId = createProject(path.toString())
-		impl.initiate(projectId, {}, {}, {}) //first time
+		def setupDone = false
+		impl.initiate(projectId, {}, {x -> setupDone = true}, {}) //first time
+		AsyncAssert.run {
+			assert setupDone
+		}
 		
 		def scannedFile = null
 		impl.initiate(projectId, {}, { x -> scannedFile = x }, {})
 		
-		assert scannedFile != null
-		assert scannedFile.isNew == false
-		assert scannedFile.hasChanged == false
+		AsyncAssert.run {
+			assert scannedFile != null
+			assert scannedFile.isNew == false
+			assert scannedFile.hasChanged == false
+		}
 	}
 }

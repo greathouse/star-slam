@@ -1,7 +1,7 @@
 package starslam.scan
 
 import groovy.io.FileType
-import groovyx.gpars.GParsExecutorsPool
+import groovyx.gpars.actor.Actors
 
 import java.nio.file.*
 import java.security.MessageDigest
@@ -30,7 +30,16 @@ class ScanService implements IScanService {
 		Closure<ScannedFile> afterFile, 
 		Closure<ScanInfo> onComplete
 	) {
+		def startTime = System.currentTimeMillis()
 		def project = projectStore.retrieve(projectId)
+		
+		def previousFiles = [:]
+		def lastScan = scanStore.retrieveLatestScanForProject(projectId)
+		if (lastScan) {
+			scanStore.filesForScan(lastScan.id).each { f ->
+				previousFiles[f.relativePath] = f
+			}
+		}
 		
 		def scanMap = [
 				projectId:projectId
@@ -46,8 +55,8 @@ class ScanService implements IScanService {
 		def processFile = { File file ->
 			def md5 = generateMd5(file)
 			def relativePath = file.canonicalPath.replace(project.rootPath, '')
-			def existing = scanStore.retrieveLatestScannedFileWithRelativePath(projectId, relativePath)
-	
+			def existing = previousFiles[relativePath]
+			
 			def scannedFileMap = [
 				scanId:info.id
 				, filename:file.name
@@ -65,13 +74,37 @@ class ScanService implements IScanService {
 			afterFile(scannedFile)
 		}
 		
-		GParsExecutorsPool.withPool(30) {
-			new File(project.rootPath).eachFileRecurse(FileType.FILES) { file ->
-				processFile.callAsync(file)
+		def consumer = Actors.actor {
+			loop {
+				println "Waiting..."
+				react { file ->
+					if (file == null) {
+						terminate()
+						return
+					}
+					processFile(file)
+				}
 			}
 		}
 		
-		onComplete(info)
+		Thread.start {
+			new File(project.rootPath).eachFileRecurse(FileType.FILES) { file ->
+				println file.canonicalPath
+				consumer.send file
+			}
+			consumer.send null
+			consumer.join()
+			println "Everyone's Processed"
+			def endTime = System.currentTimeMillis()
+//			scanMap.with {
+				scanMap.status = ScanStatus.COMPLETED
+				scanMap.processingTime = endTime - startTime 
+//			}
+			def completeInfo = new ScanInfo(scanMap)
+			scanStore.persist(completeInfo)
+			onComplete(completeInfo)
+		}
+		
 		return info
 	}
 

@@ -2,7 +2,7 @@ package starslam
 
 class AsyncAssert {
 	public static void run(Closure closure) {
-		run(30, closure)
+		run(5, closure)
 	}
 	
 	public static void run(int timeout, Closure closure) {

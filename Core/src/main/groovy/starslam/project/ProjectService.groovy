@@ -13,6 +13,7 @@ final class ProjectService implements IProjectStore {
 			id:it.id
 			, name:it.name
 			, rootPath:it.root_path
+			, fileGlob:it.file_glob
 		])
 	}
 
@@ -36,12 +37,14 @@ final class ProjectService implements IProjectStore {
 						id
 						, name
 						, root_path
+						, file_glob
 					)
 					key (id)
 					values (
 						${id}
 						, ${project.name}
 						, ${project.rootPath}
+						, ${project.fileGlob}
 					)
 				""")
 				return id
@@ -53,7 +56,7 @@ final class ProjectService implements IProjectStore {
 	public Project retrieve(String projectId) {
 		use(OpenDatabase) { 
 			dbConnector.getConnection { sql ->
-				def row = sql.firstRow("select id, name, root_path from project where id = ${projectId}")
+				def row = sql.firstRow("select id, name, root_path, file_glob from project where id = ${projectId}")
 				return (row == null) ? null : projectRowMapper(row)
 			}
 		}
@@ -64,7 +67,7 @@ final class ProjectService implements IProjectStore {
 		use(OpenDatabase) {
 			dbConnector.getConnection { sql ->
 				def rtn = []
-				sql.eachRow("select id, name, root_path from project") {
+				sql.eachRow("select id, name, root_path, file_glob from project") {
 					rtn.add(projectRowMapper(it))
 				}
 				return rtn;

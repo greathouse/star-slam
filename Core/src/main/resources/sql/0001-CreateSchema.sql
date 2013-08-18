@@ -1,7 +1,8 @@
 create table Project (
 	ID varchar(50) not null,
 	NAME varchar(500) not null,
-	ROOT_PATH varchar(100) not null
+	ROOT_PATH varchar(100) not null,
+	FILE_GLOB varchar(100) not null
 );
 create primary key on project (id);
 create unique index project_name_uidx on project (name);
