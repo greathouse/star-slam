@@ -13,5 +13,6 @@ Technologies in use
 * Groovy - http://groovy.codehaus.org/
 * Ratpack Framework - http://www.ratpack-framework.org/
 * Google Guice - https://code.google.com/p/google-guice/
+* KnockoutJS - http://knockoutjs.com/
 
 Fully tested, including REST API endpoints.
