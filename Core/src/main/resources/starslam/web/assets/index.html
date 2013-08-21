@@ -1,0 +1,96 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Star Slam</title>
+<script src="/javascripts/vendor/jquery.js"></script>
+<script src="/javascripts/vendor/knockout-2.3.0.js"></script>
+</head>
+<body>
+<h1>Projects</h1>
+<form data-bind="submit: addProject">
+	<input data-bind="value: newProjectName" placeholder="Project Name" />
+	<input data-bind="value: newProjectRootPath" placeholder="Root Path" />
+	<input data-bind="value: newProjectFileGlob" placeholder="File Types (pipe delimited)" />
+	<button data-bind="click: create">Create</button>
+</form>
+
+<ul data-bind="foreach: projects, visible: projects().length > 0">
+	<li>
+		<span data-bind="text: name"></span> (<span data-bind="text: rootPath" ></span>)
+	</li>
+</ul>
+
+</body>
+</html>
+
+<script>
+function Project(data) {
+	var self = this;
+	
+	self.id = ko.observable(data.id)
+	self.name = ko.observable(data.name);
+	self.rootPath = ko.observable(data.rootPath);
+	self.fileGlob = ko.observable(data.fileGlob);
+	
+	self.init = function(data) {
+		self.id(data.id);
+		self.name(data.name);
+		self.rootPath(data.rootPath);
+		self.fileGlob(data.fileGlob);
+	}
+}
+
+function ProjectListViewModel() {
+	//Data
+	var self = this;
+	self.projects = ko.observableArray([]);
+	self.newProjectName = ko.observable();
+	self.newProjectRootPath = ko.observable();
+	self.newProjectFileGlob = ko.observable();
+	
+	//Operations
+	self.addProject = function() {
+		self.projects.push(new Project({name: this.newProjectName, rootPath: this.newProjectRootPath, fileGlob: this.newProjectFileGlob}))
+	};
+	
+	self.create = function() {
+		var projectObj = { name:self.newProjectName(), rootPath:self.newProjectRootPath(), fileGlob:self.newProjectFileGlob()};
+		$.ajax("/projects", {
+			data:JSON.stringify(projectObj)
+			, dataType: 'json'
+			, type: "post"
+			, contentType:"application/json; charset=utf-8"
+			, success: function(result, textStatus, request) { 
+				$.getJSON(request.getResponseHeader("Location"), function(project) {
+					self.projects.push(new Project(project));
+				})
+			}
+		});
+	};
+	
+	//Load Projects
+	$.getJSON("/projects", function(allData) {
+		var mappedProjects = $.map(allData, function(item) { return new Project(item) });
+		self.projects(mappedProjects)
+	})
+}
+
+ko.applyBindings(new ProjectListViewModel());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
