@@ -2,24 +2,43 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Star Slam</title>
-<script src="/javascripts/vendor/jquery.js"></script>
-<script src="/javascripts/vendor/knockout-2.3.0.js"></script>
+<title>Star Slam</title>  
+<link rel="stylesheet" href="css/foundation.css">
+
+<script src="js/vendor/jquery.js"></script>
+<script src="js/vendor/knockout-2.3.0.js"></script>
+<script src="js/vendor/custom.modernizr.js"></script>
 </head>
 <body>
-<h1>Projects</h1>
-<form data-bind="submit: addProject">
-	<input data-bind="value: newProjectName" placeholder="Project Name" />
-	<input data-bind="value: newProjectRootPath" placeholder="Root Path" />
-	<input data-bind="value: newProjectFileGlob" placeholder="File Types (pipe delimited)" />
-	<button data-bind="click: create">Create</button>
-</form>
 
-<ul data-bind="foreach: projects, visible: projects().length > 0">
-	<li>
-		<span data-bind="text: name"></span> (<span data-bind="text: rootPath" ></span>)
-	</li>
-</ul>
+<div class="row">
+<table class="large-12 columns">
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Root Path</th>
+		</tr>
+	</thead>
+	<tbody data-bind="foreach: projects, visible: projects().length > 0">
+		<tr>
+			<td><span data-bind="text: name"></span></td>
+			<td><span data-bind="text: rootPath" ></span></td>
+		</tr>
+	</tbody>
+</table>
+</div>
+
+<div class="row">
+<form id="projectForm" data-bind="submit: addProject">
+	<fieldset>
+		<legend>New Project</legend>
+		<input class="large-12 columns" data-bind="value: newProjectName" placeholder="Project Name" />
+		<input class="large-12 columns" data-bind="value: newProjectRootPath" placeholder="Root Path" />
+		<input class="large-12 columns" data-bind="value: newProjectFileGlob" placeholder="File Types (pipe delimited)" />
+		<button class="small" data-bind="click: create">Create</button>
+	</fieldset>
+</form>
+</div>
 
 </body>
 </html>
@@ -61,10 +80,13 @@ function ProjectListViewModel() {
 			, dataType: 'json'
 			, type: "post"
 			, contentType:"application/json; charset=utf-8"
-			, success: function(result, textStatus, request) { 
-				$.getJSON(request.getResponseHeader("Location"), function(project) {
+			, success: function(result, textStatus, response) { 
+				$.getJSON(response.getResponseHeader("Location"), function(project) {
 					self.projects.push(new Project(project));
-				})
+				});
+			}
+			, error: function(response) {
+				alert(response.responseText)
 			}
 		});
 	};

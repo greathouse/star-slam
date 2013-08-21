@@ -4,7 +4,7 @@ import org.ratpackframework.handling.Context
 import org.ratpackframework.handling.Handler
 
 class AssetHandler implements Handler {
-	private static final Map<String,String>MIME_TYPES = [
+	private static final Map<String,String> MIME_TYPES = [
 		'html':'text/html'
 		, 'js':'application/javascript'
 		, 'css':'text/css'
@@ -14,7 +14,8 @@ class AssetHandler implements Handler {
 	public void handle(Context exchange) {
 		def path = exchange.request.path?:'index.html'
 		def map = URLConnection.getFileNameMap()
-		def mimeType = path.substring(path.lastIndexOf('.')+1)
+		def ext = path.substring(path.lastIndexOf('.')+1)
+		def mimeType = MIME_TYPES[ext]
 		def asset = this.class.getResourceAsStream('/starslam/web/assets/'+path)?.text
 		if (asset == null) {
 			def e404 = this.class.getResourceAsStream('/starslam/web/assets/404.html')
