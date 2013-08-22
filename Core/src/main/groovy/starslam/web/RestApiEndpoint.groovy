@@ -5,7 +5,6 @@ import org.ratpackframework.handling.Context
 import org.ratpackframework.handling.Handler
 
 abstract class RestApiEndpoint implements Handler {
-
 	protected void get(Context context, String id){
 		status(context, 405).sendJson(context, [success:false, errorMessage:"This method is not implemented"])
 	}

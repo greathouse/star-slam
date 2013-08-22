@@ -1,6 +1,7 @@
 package starslam.web.project
 
 import static groovy.json.JsonOutput.toJson
+import static starslam.web.Validation.*
 import groovy.json.JsonSlurper
 
 import org.ratpackframework.handling.Context
@@ -22,6 +23,23 @@ class ProjectApi extends RestApiEndpoint {
 	
 	protected void post(Context context) {
 		def body = new JsonSlurper().parseText(context.request.text)
+		def errors = []
+		if (!body.name) {
+			errors << [code:REQUIRED, property:'name', message:'Project name is required']
+		}
+		if (!body.rootPath) {
+			errors << [code:REQUIRED, property:'rootPath', message:'Root Path is required']
+		}
+		if (!body.fileGlob) {
+			errors << [code:REQUIRED, property:'fileGlob', message:'File Glob is required']
+		}
+		if (errors) {
+			context.response.status(400)
+			sendJson(context, [
+				success:false
+				, errors:errors
+			])
+		}
 		try {
 			def id = projectStore.persist(new Project(null, body.name, body.rootPath, body.fileGlob))
 			header(context, 'Location', "/"+context.request.path+"/$id")
@@ -33,9 +51,12 @@ class ProjectApi extends RestApiEndpoint {
 		catch(DuplicateProjectNameException e) {
 			context.response.status(400)
 			sendJson(context, [
-				success:false, 
-				message:"A project named ${body.name} already exists. Please choose a different name.", 
-				errorCode:"DUPLICATE_PROJECT_NAME"
+				success:false
+				, errors:[[
+					'code':"DUPLICATE_PROJECT_NAME"
+					, 'message':"A project named ${body.name} already exists. Please choose a different name."
+					, 'property':"name" 
+				]]
 			])
 		}
 	}

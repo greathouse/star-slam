@@ -5,13 +5,14 @@
 <title>Star Slam</title>  
 <link rel="stylesheet" href="css/foundation.css">
 
-<script src="js/vendor/jquery.js"></script>
-<script src="js/vendor/knockout-2.3.0.js"></script>
-<script src="js/vendor/custom.modernizr.js"></script>
+<script src="js/vendor/jquery.js" type="text/javascript"></script>
+<script src="js/vendor/underscore-min.js" type="text/javascript"></script>
+<script src="js/vendor/knockout-2.3.0.js" type="text/javascript"></script>
+<script src="js/vendor/custom.modernizr.js" type="text/javascript"></script>
 </head>
 <body>
 
-<div class="row">
+<div id="projectList" class="row">
 <table class="large-12 columns">
 	<thead>
 		<tr>
@@ -28,22 +29,58 @@
 </table>
 </div>
 
-<div class="row">
-<form id="projectForm" data-bind="submit: addProject">
-	<fieldset>
-		<legend>New Project</legend>
-		<input class="large-12 columns" data-bind="value: newProjectName" placeholder="Project Name" />
-		<input class="large-12 columns" data-bind="value: newProjectRootPath" placeholder="Root Path" />
-		<input class="large-12 columns" data-bind="value: newProjectFileGlob" placeholder="File Types (pipe delimited)" />
-		<button class="small" data-bind="click: create">Create</button>
-	</fieldset>
+<form id="projectForm">
+	<div class="row">
+		<fieldset>
+			<legend>New Project</legend>
+			<div class="large-12 columns">
+				<input type="text" data-bind="value: name" placeholder="Project Name" />
+				<small class="error" data-bind="visible: name.hasError, text: name.validationMessage"></small>
+			</div>
+			
+			<div class="large-12 columns">
+				<input type="text" data-bind="value: rootPath" placeholder="Root Path" />
+				<small class="error" data-bind="visible: rootPath.hasError, text: rootPath.validationMessage"></small>
+			</div>
+			
+			<div class="large-12 columns">
+				<input type="text" data-bind="value: fileGlob" placeholder="File Types (pipe delimited)" />
+				<small class="error" data-bind="visible: fileGlob.hasError, text: fileGlob.validationMessage"></small>
+			</div>
+			<button class="small" data-bind="click: create">Create</button>
+		</fieldset>
+	</div>
 </form>
-</div>
 
 </body>
 </html>
 
 <script>
+var postbox = new ko.subscribable();
+
+ko.extenders.validation = function(target, propertyName) {
+	//add some sub-observables to our observable
+	target.hasError = ko.observable();
+	target.validationMessage = ko.observable();
+	
+	//define a function to do validation
+	function validate(errors) {
+		var result = _.findWhere(errors, {property:propertyName});
+		target.hasError(result ? true : false);
+		target.validationMessage(result ? result.message : "");
+	}
+	
+	postbox.subscribe(function(errors) {
+		validate(errors);
+	}, this, "formErrors")
+	
+	//validate whenever the value changes
+	target.subscribe(validate);
+	
+	//return the original observable
+	return target;
+};
+
 function Project(data) {
 	var self = this;
 	
@@ -60,21 +97,15 @@ function Project(data) {
 	}
 }
 
-function ProjectListViewModel() {
-	//Data
+function NewProjectViewModel() {
 	var self = this;
-	self.projects = ko.observableArray([]);
-	self.newProjectName = ko.observable();
-	self.newProjectRootPath = ko.observable();
-	self.newProjectFileGlob = ko.observable();
 	
-	//Operations
-	self.addProject = function() {
-		self.projects.push(new Project({name: this.newProjectName, rootPath: this.newProjectRootPath, fileGlob: this.newProjectFileGlob}))
-	};
+	self.name = ko.observable().extend({validation: "name"});
+	self.rootPath = ko.observable().extend({validation: "rootPath"});
+	self.fileGlob = ko.observable().extend({validation: "fileGlob"});
 	
 	self.create = function() {
-		var projectObj = { name:self.newProjectName(), rootPath:self.newProjectRootPath(), fileGlob:self.newProjectFileGlob()};
+		var projectObj = { name:self.name(), rootPath:self.rootPath(), fileGlob:self.fileGlob()};
 		$.ajax("/projects", {
 			data:JSON.stringify(projectObj)
 			, dataType: 'json'
@@ -82,23 +113,40 @@ function ProjectListViewModel() {
 			, contentType:"application/json; charset=utf-8"
 			, success: function(result, textStatus, response) { 
 				$.getJSON(response.getResponseHeader("Location"), function(project) {
-					self.projects.push(new Project(project));
+					postbox.notifySubscribers(new Project(project), "projectCreated");
 				});
+				$('#projectForm').get(0).reset();
 			}
 			, error: function(response) {
-				alert(response.responseText)
+				var data = JSON.parse(response.responseText);
+				postbox.notifySubscribers(data.errors, "formErrors")
 			}
 		});
 	};
+}
+
+function ProjectListViewModel() {
+	//Data
+	var self = this;
+	self.projects = ko.observableArray([]);
 	
 	//Load Projects
 	$.getJSON("/projects", function(allData) {
 		var mappedProjects = $.map(allData, function(item) { return new Project(item) });
 		self.projects(mappedProjects)
 	})
+	
+	postbox.subscribe(function(newValue) {
+		self.projects.push(newValue);
+	}, self, "projectCreated"); 
 }
 
-ko.applyBindings(new ProjectListViewModel());
+function FormError(id, message) {
+	$('#'+id).addClass('error');
+}
+
+ko.applyBindings(new ProjectListViewModel(), $('#projectList')[0]);
+ko.applyBindings(new NewProjectViewModel(), $('#projectForm')[0]);
 </script>
 
 

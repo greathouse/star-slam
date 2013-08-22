@@ -43,8 +43,12 @@ class ProjectsApiTest extends WebTestBase {
 			.expectStatus(400)
 			.verifyResponse { json ->
 				assert json.success == false
-				assert json.errorCode == 'DUPLICATE_PROJECT_NAME'
-				assert json.message.contains(body.name)
+				def error = json.errors.find {
+					it.code == 'DUPLICATE_PROJECT_NAME'
+				}
+				assert error
+				assert error.property == 'name'
+				assert error.message.contains(body.name)
 			}
 		}
 	}
@@ -100,6 +104,22 @@ class ProjectsApiTest extends WebTestBase {
 			.expectStatus(200)
 			.verifyResponse { json ->
 				assert json.size() == 3
+			}
+		}
+	}
+	
+	public void test_Required() {
+		Kettle.withTea { tea ->
+			tea.post(URL, [:])
+			.expectStatus(400)
+			.verifyResponse { json ->
+				assert json.success == false
+				assert json.errors.size() == 3
+				assert json.errors.findAll{it.code == 'REQUIRED_FIELD'}.size() == 3
+				
+				assert json.errors.find{it.property == 'name'}
+				assert json.errors.find{it.property == 'rootPath'}
+				assert json.errors.find{it.property == 'fileGlob'}
 			}
 		}
 	}
