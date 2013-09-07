@@ -4,15 +4,12 @@ import groovy.io.FileType
 import groovy.json.JsonSlurper
 
 import com.google.common.io.Files
-import com.google.inject.Inject
-import com.google.inject.name.Named
 
 class PluginService implements IPluginService {
 	final private String PLUGIN_PATH
 	private Map<String, IPlugin> registeredPlugins
 	
-	@Inject
-	public PluginService(@Named("plugin.path") String pluginPath) {
+	public PluginService(String pluginPath) {
 		PLUGIN_PATH = pluginPath
 	}
 	

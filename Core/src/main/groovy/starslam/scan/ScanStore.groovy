@@ -3,8 +3,6 @@ package starslam.scan
 import starslam.IDbConnection
 import starslam.OpenDatabase
 
-import com.google.inject.Inject
-
 final class ScanStore implements IScanStore {
 	final IDbConnection dbConnector
 	
@@ -38,7 +36,6 @@ final class ScanStore implements IScanStore {
 		])
 	}
 	
-	@Inject
 	public ScanStore(IDbConnection conn) {
 		dbConnector = conn
 	}

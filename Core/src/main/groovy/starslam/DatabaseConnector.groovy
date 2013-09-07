@@ -2,14 +2,10 @@ package starslam
 
 import groovy.sql.Sql
 
-import com.google.inject.Inject
-import com.google.inject.name.Named
-
 class DatabaseConnector implements IDbConnection {
 	private final String DBURL;
 	
-	@Inject
-	public DatabaseConnector(@Named("JDBC_URL") String dbUrl) {
+	public DatabaseConnector(String dbUrl) {
 		DBURL = dbUrl
 	}
 	

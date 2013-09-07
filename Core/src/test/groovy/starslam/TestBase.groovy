@@ -1,15 +1,8 @@
 package starslam
-import java.io.File;
-
 import groovy.sql.Sql
 import junit.framework.TestCase
-import starslam.project.ProjectModule
-import starslam.scan.ScanModule
-import starslam.scan.plugins.PluginModule
 
 import com.google.common.io.Files
-import com.google.inject.Guice
-import com.google.inject.Injector
 
 abstract class TestBase extends TestCase {
 	final protected def DBURL = 'jdbc:h2:~/star-slam/star-slam-test'
@@ -23,7 +16,6 @@ abstract class TestBase extends TestCase {
 	
 	private static porpoised = false;
 	private static wired = false;
-	protected static Injector injector
 	protected static File pluginDirectory
 	
 	public final void setUp() {
@@ -33,12 +25,6 @@ abstract class TestBase extends TestCase {
 		cleanUpDatabase()
 		if (!wired) {
 			pluginDirectory = Files.createTempDir()
-			injector = Guice.createInjector(
-				new DefaultModule(DBURL)
-				, new ProjectModule()
-				, new ScanModule()
-				, new PluginModule(pluginDirectory.canonicalPath)
-			)
 			wired = true
 		}
 		

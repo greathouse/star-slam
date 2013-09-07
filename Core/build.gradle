@@ -2,16 +2,16 @@ apply plugin: 'eclipse'
 apply plugin: 'maven'
 apply plugin: 'groovy'
 apply plugin: 'fatjar'
+apply plugin: 'war'
+apply plugin: 'jetty'
 
 def localMavenRepo = 'file://' + new File(System.getProperty('user.home'), '.m2/repository').absolutePath
 
 buildscript {
   repositories {
-    maven { url "http://oss.jfrog.org/repo" }
     mavenCentral()
   }
   dependencies {
-    classpath 'org.ratpack-framework:ratpack-gradle:0.9.0-SNAPSHOT'
 	classpath 'eu.appsatori:gradle-fatjar-plugin:0.2-rc1'
   }
 }
@@ -19,31 +19,23 @@ buildscript {
 
 repositories {
   mavenRepo url: localMavenRepo
-  maven { url "http://oss.jfrog.org/repo" }
   mavenCentral()
-  maven { url "http://repo.springsource.org/repo" } // for springloaded
 }
-
-// The ratpack plugin applies the application plugin, making it easy to create a standalone application.
-// See: http://gradle.org/docs/current/userguide/application_plugin.html
-apply plugin: "ratpack-groovy"
 
 dependencies {
 	testCompile 'junit:junit:4.11'
+	testCompile group: 'com.greenmoonsoftware', name: 'green-tea-test', version: '1.0-SNAPSHOT'
+	
+	providedCompile 'javax.servlet:servlet-api:2.5'
 	compile 'commons-cli:commons-cli:1.1'
 	compile 'com.h2database:h2:1.3.172'
-	compile group: 'com.greenmoonsoftware', name: 'green-tea-test', version: '1.0-SNAPSHOT'
 	compile 'org.codehaus.groovy:groovy-all:2.1.6'
-	compile 'org.ratpack-framework:ratpack-guice:0.9.0-SNAPSHOT'
-	compile 'com.google.guava:guava:14.0.1'
 	compile 'org.reflections:reflections:0.9.9-RC1'
 	compile 'org.slf4j:slf4j-api:1.7.5'
 	compile 'org.codehaus.gpars:gpars:1.1.0'
 	compile 'org.apache.ant:ant:1.9.2'
-}
-
-run {
-    systemProperty "ratpack.reloadable", "true"
+	compile 'org.springframework:spring-webmvc:3.2.2.RELEASE'
+	
 }
 
 task wrapper(type: Wrapper) {

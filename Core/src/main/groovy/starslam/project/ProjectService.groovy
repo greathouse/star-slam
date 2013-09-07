@@ -3,8 +3,6 @@ package starslam.project
 import starslam.IDbConnection
 import starslam.OpenDatabase
 
-import com.google.inject.Inject
-
 final class ProjectService implements IProjectStore {
 	final IDbConnection dbConnector
 	
@@ -17,7 +15,6 @@ final class ProjectService implements IProjectStore {
 		])
 	}
 
-	@Inject
 	public ProjectService(IDbConnection conn) {
 		dbConnector = conn
 	}

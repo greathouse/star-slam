@@ -1,11 +1,7 @@
 package starslam
 
-import static org.ratpackframework.guice.Guice.handler
-import static org.ratpackframework.handling.Handlers.chain
-
 import java.util.regex.Pattern
 
-import org.ratpackframework.server.RatpackServerBuilder
 import org.reflections.Reflections
 import org.reflections.scanners.ResourcesScanner
 
@@ -33,12 +29,4 @@ class Bootstrapper {
 		
 		this
 	}
-	
-	Bootstrapper ratpack(String dbUrl) {
-		def ratpackServer = RatpackServerBuilder.build(new StarSlamLaunchConfig(dbUrl))
-		ratpackServer.start()
-		
-		this
-	}
-	
 }

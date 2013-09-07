@@ -8,14 +8,11 @@ import java.security.MessageDigest
 import starslam.IDbConnection
 import starslam.project.IProjectStore
 
-import com.google.inject.Inject
-
 class ScanService implements IScanService {
 	final IDbConnection dbConnector
 	final IProjectStore projectStore
 	final IScanStore scanStore
 	
-	@Inject
 	public ScanService(IDbConnection conn, IProjectStore projectStore, IScanStore scanStore) {
 		dbConnector = conn
 		this.projectStore = projectStore
