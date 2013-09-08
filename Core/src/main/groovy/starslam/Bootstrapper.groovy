@@ -8,6 +8,9 @@ import org.reflections.Reflections
 import org.reflections.scanners.ResourcesScanner
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext
 import org.springframework.web.servlet.DispatcherServlet
+import starslam.project.ProjectModuleConfiguration
+import starslam.scan.ScanModuleConfiguration
+import starslam.scan.plugins.PluginModuleConfiguration
 import starslam.web.WebConfig
 
 import java.util.regex.Pattern
@@ -36,7 +39,13 @@ class Bootstrapper {
 
 	Bootstrapper jetty()  {
 		final def applicationContext = new AnnotationConfigWebApplicationContext()
-		applicationContext.register(WebConfig)
+		applicationContext.register(
+						Configuration
+						,	ProjectModuleConfiguration
+						, ScanModuleConfiguration
+						, PluginModuleConfiguration
+						, WebConfig
+		)
 
 		final def servletHolder = new ServletHolder(new DispatcherServlet(applicationContext))
 		final def context = new ServletContextHandler()

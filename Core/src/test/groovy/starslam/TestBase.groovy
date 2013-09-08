@@ -3,11 +3,17 @@ import groovy.sql.Sql
 import junit.framework.TestCase
 
 import com.google.common.io.Files
+import org.eclipse.jetty.server.Server
+import org.eclipse.jetty.servlet.ServletContextHandler
+import org.eclipse.jetty.servlet.ServletHolder
 import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext
+import org.springframework.web.servlet.DispatcherServlet
 import starslam.project.ProjectModuleConfiguration
 import starslam.scan.ScanModuleConfiguration
 import starslam.scan.plugins.PluginModuleConfiguration
+import starslam.web.WebConfig
 
 abstract class TestBase extends TestCase {
 	protected Sql sql
@@ -24,12 +30,17 @@ abstract class TestBase extends TestCase {
 		onPreSetup()
 
 		if (!wired) {
-			context = new AnnotationConfigApplicationContext(
-							TestConfiguration
-							,	ProjectModuleConfiguration
-							, ScanModuleConfiguration
-							, PluginModuleConfiguration
+			context = new AnnotationConfigWebApplicationContext()
+			context.register(
+				TestConfiguration
+				,	ProjectModuleConfiguration
+				, ScanModuleConfiguration
+				, PluginModuleConfiguration
+				, WebConfig
 			)
+
+			startJetty(context)
+
 			pluginDirectory = context.getBean("pluginDirectory")
 			wired = true
 		}
@@ -39,6 +50,16 @@ abstract class TestBase extends TestCase {
 		cleanUpDatabase()
 
 		onPostSetup()
+	}
+
+	private static void startJetty(def applicationContext) {
+		final def servletHolder = new ServletHolder(new DispatcherServlet(applicationContext))
+		final def context = new ServletContextHandler()
+		context.setContextPath("/")
+		context.addServlet(servletHolder, "/*")
+		final def server = new Server(Integer.valueOf("8080"))
+		server.setHandler(context)
+		server.start()
 	}
 	
 	private void cleanUpDatabase() {
