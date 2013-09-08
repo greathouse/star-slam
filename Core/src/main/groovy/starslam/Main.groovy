@@ -7,6 +7,7 @@ class Main {
 	static void main(String[] args) {
 		new Bootstrapper()
 			.porpoise(DB_URL)
+			.jetty()
 	}
 	
 }

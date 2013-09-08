@@ -30,9 +30,8 @@ class PluginService implements IPluginService {
 
 	@Override
 	public IPlugin get(File file) {
-		if (registeredPlugins == null) {
-			registeredPlugins = Collections.unmodifiableMap(loadPlugins())
-		}
+		registeredPlugins = Collections.unmodifiableMap(loadPlugins())
+
 		def extension = Files.getFileExtension(file.canonicalPath)
 		switch(extension) {
 			case "txt": return new TextPlugin()

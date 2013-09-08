@@ -3,31 +3,41 @@ import groovy.sql.Sql
 import junit.framework.TestCase
 
 import com.google.common.io.Files
+import org.springframework.context.ApplicationContext
+import org.springframework.context.annotation.AnnotationConfigApplicationContext
+import starslam.project.ProjectModuleConfiguration
+import starslam.scan.ScanModuleConfiguration
+import starslam.scan.plugins.PluginModuleConfiguration
 
 abstract class TestBase extends TestCase {
-	final protected def DBURL = 'jdbc:h2:~/star-slam/star-slam-test'
 	protected Sql sql
-	final protected IDbConnection conn = {
-		Sql.newInstance(DBURL, '', '', 'org.h2.Driver')
-	} as IDbConnection
-	
+
 	protected void onPreSetup() {}
 	protected void onPostSetup() {}
 	
 	private static porpoised = false;
 	private static wired = false;
 	protected static File pluginDirectory
+	protected static ApplicationContext context
 	
 	public final void setUp() {
 		onPreSetup()
-		if (!porpoised) { new Bootstrapper().porpoise(DBURL) ; porpoised = true }
-		sql = conn.getConnection()
-		cleanUpDatabase()
+
 		if (!wired) {
-			pluginDirectory = Files.createTempDir()
+			context = new AnnotationConfigApplicationContext(
+							TestConfiguration
+							,	ProjectModuleConfiguration
+							, ScanModuleConfiguration
+							, PluginModuleConfiguration
+			)
+			pluginDirectory = context.getBean("pluginDirectory")
 			wired = true
 		}
-		
+
+		if (!porpoised) { new Bootstrapper().porpoise(context.getBean("dbUrl")) ; porpoised = true }
+		sql = context.getBean(IDbConnection).connection
+		cleanUpDatabase()
+
 		onPostSetup()
 	}
 	

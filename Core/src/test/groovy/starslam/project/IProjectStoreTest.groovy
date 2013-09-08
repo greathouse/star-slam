@@ -6,7 +6,7 @@ class IProjectStoreTest extends TestBase {
 	IProjectStore impl
 	
 	protected void onPostSetup() {
-		impl = injector.getInstance(IProjectStore)
+		impl = context.getBean(IProjectStore)
 	}
 	
 	private void saveRetrieveUpdate(Project persist) {

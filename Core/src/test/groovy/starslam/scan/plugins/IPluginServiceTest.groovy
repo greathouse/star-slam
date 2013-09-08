@@ -9,7 +9,7 @@ class IPluginServiceTest extends TestBase {
 	IPluginService impl
 	
 	protected void onPostSetup() {
-		impl = injector.getInstance(IPluginService)
+		impl = context.getBean(IPluginService)
 	}
 	
 	private File createFile(String name, String data) {

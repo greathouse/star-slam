@@ -11,9 +11,9 @@ class IScanServiceTest extends TestBase {
 	private IScanStore scanStore
 	
 	protected void onPostSetup() {
-		impl = injector.getInstance(IScanService)
-		projectStore = injector.getInstance(IProjectStore)
-		scanStore = injector.getInstance(IScanStore)
+		impl = context.getBean(IScanService)
+		projectStore = context.getBean(IProjectStore)
+		scanStore = context.getBean(IScanStore)
 	}
 	
 	private String createProject(String rootPath) {

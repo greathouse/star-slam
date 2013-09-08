@@ -3,3 +3,5 @@
 Core/src/test/resources/**/*.config
 build/
 .gradle/
+Core/out
+Core/.idea

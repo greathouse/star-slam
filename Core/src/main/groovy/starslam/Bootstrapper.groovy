@@ -1,17 +1,22 @@
 package starslam
 
-import java.util.regex.Pattern
-
+import com.google.common.io.Files
+import org.eclipse.jetty.server.Server
+import org.eclipse.jetty.servlet.ServletContextHandler
+import org.eclipse.jetty.servlet.ServletHolder
 import org.reflections.Reflections
 import org.reflections.scanners.ResourcesScanner
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext
+import org.springframework.web.servlet.DispatcherServlet
+import starslam.web.WebConfig
 
-import com.google.common.io.Files
+import java.util.regex.Pattern
 
 class Bootstrapper {
 	Bootstrapper porpoise(String dbUrl) {
-		ClassLoader parent = getClass().getClassLoader();
-		GroovyClassLoader loader = new GroovyClassLoader(parent);
-		Class groovyClass = loader.parseClass(parent.getResourceAsStream("porpoise/Porpoise.groovy"),"porpoise/Porpoise.groovy");
+		def parent = getClass().getClassLoader()
+		def loader = new GroovyClassLoader(parent)
+		def groovyClass = loader.parseClass(parent.getResourceAsStream("porpoise/Porpoise.groovy"),"porpoise/Porpoise.groovy")
 		
 		def tempSqlDir = Files.createTempDir()
 		def sqlfiles = new Reflections("sql", new ResourcesScanner()).getResources(Pattern.compile(".*\\.sql"))
@@ -22,11 +27,34 @@ class Bootstrapper {
 				w << infile
 			}
 		}
+
+		def groovyObject = (GroovyObject) groovyClass.newInstance()
+		groovyObject.invokeMethod("main", ['-SF', '-d',tempSqlDir.canonicalPath, '-U',dbUrl, '--no-exit'] as String[])
 		
-		// let's call some method on an instance
-		GroovyObject groovyObject = (GroovyObject) groovyClass.newInstance();
-		groovyObject.invokeMethod("main", ['-SF', '-d',tempSqlDir.canonicalPath, '-U',dbUrl, '--no-exit'] as String[]);
-		
+		this
+	}
+
+	Bootstrapper jetty()  {
+		final def applicationContext = new AnnotationConfigWebApplicationContext()
+		applicationContext.register(WebConfig)
+
+		final def servletHolder = new ServletHolder(new DispatcherServlet(applicationContext))
+		final def context = new ServletContextHandler()
+		context.setContextPath("/")
+		context.addServlet(servletHolder, "/*")
+
+		def webPort = System.getenv("PORT")
+		if (webPort == null || webPort.isEmpty()) {
+				webPort = "8080"
+		}
+
+		final def server = new Server(Integer.valueOf(webPort))
+
+		server.setHandler(context)
+
+		server.start()
+		server.join()
+
 		this
 	}
 }

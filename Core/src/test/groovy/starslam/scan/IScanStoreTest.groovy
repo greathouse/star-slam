@@ -12,8 +12,8 @@ class IScanStoreTest extends TestBase {
 	
 	@Override
 	protected void onPostSetup() {
-		scanStore = injector.getInstance(IScanStore)
-		projectStore = injector.getInstance(IProjectStore)
+		scanStore = context.getBean(IScanStore)
+		projectStore = context.getBean(IProjectStore)
 	}
 
 	private String createProject() {
