@@ -19,6 +19,5 @@ Technologies in use
 
 Fully tested, including REST API endpoints.
 
-NOTE ABOUT RATPACK
-==================
+NOTE ABOUT RATPACK<br />
 This project started out using Ratpack+Google Guice. However, Ratpack is still under <em>heavy</em> development. Every update seemed to break compatibility. For that reason, this project has been switched over to use Spring-MVC (with Spring-IOC). It is a shame, because Google Guice would be nice.
