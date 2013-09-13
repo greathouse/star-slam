@@ -1,182 +1,91 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Star Slam</title>  
-<link rel="stylesheet" href="css/foundation.css">
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>Star Slam</title>
+  <link rel="stylesheet" href="css/foundation.css">
 
-<script src="js/vendor/jquery.js" type="text/javascript"></script>
-<script src="js/vendor/underscore-min.js" type="text/javascript"></script>
-<script src="js/vendor/knockout-2.3.0.js" type="text/javascript"></script>
-<script src="js/vendor/custom.modernizr.js" type="text/javascript"></script>
+  <script src="js/vendor/jquery.js" type="text/javascript"></script>
+  <script src="js/vendor/underscore-min.js" type="text/javascript"></script>
+  <script src="js/vendor/knockout-2.3.0.js" type="text/javascript"></script>
+  <script src="js/vendor/custom.modernizr.js" type="text/javascript"></script>
 </head>
 <body>
 <div class="contain-to-grid">
-	<nav class="top-bar">
-	    <ul class="title-area">
-	        <li class="name">
-	        	<h1><a href="/">Star Slam</a></h1>
-	        </li>
-			<!-- Remove the class "menu-icon" to get rid of menu icon. Take out "Menu" to just have icon alone -->
-			<li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
-	    </ul>
-	    <section class="top-bar-section">
-		    <ul class="right">
-		    	<li class="divider hide-for-small"></li>
-		    	<li class="has-form"></li>
-		    </ul>
-	    </section>
-	</nav>
+  <nav class="top-bar">
+	<ul class="title-area">
+	  <li class="name">
+		<h1><a href="/">Star Slam</a></h1>
+	  </li>
+	  <!-- Remove the class "menu-icon" to get rid of menu icon. Take out "Menu" to just have icon alone -->
+	  <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
+	</ul>
+	<section class="top-bar-section">
+	  <ul class="right">
+		<li class="divider hide-for-small"></li>
+		<li class="has-form"></li>
+	  </ul>
+	</section>
+  </nav>
 </div>
 <div id="projectList" class="row">
-<table class="large-12 columns">
+  <table class="large-12 columns">
 	<thead>
-		<tr>
-			<th>Name</th>
-			<th>Root Path</th>
-		</tr>
+	<tr>
+	  <th>Name</th>
+	  <th>Root Path</th>
+	  <th></th>
+	</tr>
 	</thead>
 	<tbody data-bind="foreach: projects, visible: projects().length > 0">
-		<tr>
-			<td><span data-bind="text: name"></span></td>
-			<td><span data-bind="text: rootPath" ></span></td>
-		</tr>
+	<tr>
+	  <td><span data-bind="text: name"></span></td>
+	  <td><span data-bind="text: rootPath"></span></td>
+	  <td style="text-align: center"><a href="#" data-bind="click: startScan"><img src="/images/gears.png" /></a></td>
+	</tr>
 	</tbody>
-</table>
+  </table>
 </div>
 
-<form id="projectForm">
-	<div class="row">
-		<fieldset>
-			<legend>New Project</legend>
-			<div class="large-12 columns">
-				<input type="text" data-bind="value: name" placeholder="Project Name" />
-				<small class="error" data-bind="visible: name.hasError, text: name.validationMessage"></small>
-			</div>
-			
-			<div class="large-12 columns">
-				<input type="text" data-bind="value: rootPath" placeholder="Root Path" />
-				<small class="error" data-bind="visible: rootPath.hasError, text: rootPath.validationMessage"></small>
-			</div>
-			
-			<div class="large-12 columns">
-				<input type="text" data-bind="value: fileGlob" placeholder="File Types (pipe delimited)" />
-				<small class="error" data-bind="visible: fileGlob.hasError, text: fileGlob.validationMessage"></small>
-			</div>
-			<button class="small" data-bind="click: create">Create</button>
-		</fieldset>
-	</div>
-</form>
+<div class="row">
+  <a href="#" data-reveal-id="new-project-modal">New Project</a>
+</div>
 
-</body>
-</html>
+<div id="new-project-modal" class="reveal-modal">
+  <form id="projectForm">
+	<fieldset>
+	  <legend>New Project</legend>
+	  <div class="large-12 columns">
+		<input type="text" data-bind="value: name" placeholder="Project Name"/>
+		<small class="error" data-bind="visible: name.hasError, text: name.validationMessage"></small>
+	  </div>
+
+	  <div class="large-12 columns">
+		<input type="text" data-bind="value: rootPath" placeholder="Root Path"/>
+		<small class="error" data-bind="visible: rootPath.hasError, text: rootPath.validationMessage"></small>
+	  </div>
+
+	  <div class="large-12 columns">
+		<input type="text" data-bind="value: fileGlob" placeholder="File Types (pipe delimited)"/>
+		<small class="error" data-bind="visible: fileGlob.hasError, text: fileGlob.validationMessage"></small>
+	  </div>
+	  <button class="small" data-bind="click: create">Save</button>
+	  <a class="close-reveal-modal">&#215;</a>
+	</fieldset>
+  </form>
+</div>
+
 
 <script>
-var postbox = new ko.subscribable();
-
-ko.extenders.validation = function(target, propertyName) {
-	//add some sub-observables to our observable
-	target.hasError = ko.observable();
-	target.validationMessage = ko.observable();
-	
-	//define a function to do validation
-	function validate(errors) {
-		var result = _.findWhere(errors, {property:propertyName});
-		target.hasError(result ? true : false);
-		target.validationMessage(result ? result.message : "");
-	}
-	
-	postbox.subscribe(function(errors) {
-		validate(errors);
-	}, this, "formErrors")
-	
-	//validate whenever the value changes
-	target.subscribe(validate);
-	
-	//return the original observable
-	return target;
-};
-
-function Project(data) {
-	var self = this;
-	
-	self.id = ko.observable(data.id)
-	self.name = ko.observable(data.name);
-	self.rootPath = ko.observable(data.rootPath);
-	self.fileGlob = ko.observable(data.fileGlob);
-	
-	self.init = function(data) {
-		self.id(data.id);
-		self.name(data.name);
-		self.rootPath(data.rootPath);
-		self.fileGlob(data.fileGlob);
-	}
-}
-
-function NewProjectViewModel() {
-	var self = this;
-	
-	self.name = ko.observable().extend({validation: "name"});
-	self.rootPath = ko.observable().extend({validation: "rootPath"});
-	self.fileGlob = ko.observable().extend({validation: "fileGlob"});
-	
-	self.create = function() {
-		var projectObj = { name:self.name(), rootPath:self.rootPath(), fileGlob:self.fileGlob()};
-		$.ajax("/projects", {
-			data:JSON.stringify(projectObj)
-			, dataType: 'json'
-			, type: "post"
-			, contentType:"application/json; charset=utf-8"
-			, success: function(result, textStatus, response) { 
-				$.getJSON(response.getResponseHeader("Location"), function(project) {
-					postbox.notifySubscribers(new Project(project), "projectCreated");
-				});
-				$('#projectForm').get(0).reset();
-			}
-			, error: function(response) {
-				var data = JSON.parse(response.responseText);
-				postbox.notifySubscribers(data.errors, "formErrors")
-			}
-		});
-	};
-}
-
-function ProjectListViewModel() {
-	//Data
-	var self = this;
-	self.projects = ko.observableArray([]);
-	
-	//Load Projects
-	$.getJSON("/projects", function(allData) {
-		var mappedProjects = $.map(allData, function(item) { return new Project(item) });
-		self.projects(mappedProjects)
-	})
-	
-	postbox.subscribe(function(newValue) {
-		self.projects.push(newValue);
-	}, self, "projectCreated"); 
-}
-
-function FormError(id, message) {
-	$('#'+id).addClass('error');
-}
-
-ko.applyBindings(new ProjectListViewModel(), $('#projectList')[0]);
-ko.applyBindings(new NewProjectViewModel(), $('#projectForm')[0]);
+  document.write('<script src=/js/vendor/'
+  + ('__proto__' in {} ? 'zepto' : 'jquery')
+  + '.js><\/script>');
 </script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+<script src="js/foundation/foundation.js" type="text/javascript"></script>
+<script src="js/foundation/foundation.reveal.js" type="text/javascript"></script>
+<script>
+  $(document).foundation();
+</script>
+<script src="/js/star-slam/projects.js"></script>
+</body>
+</html>
