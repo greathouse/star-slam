@@ -28,7 +28,7 @@ class ProjectController {
 	@Autowired IProjectStore projectStore
 
 	@RequestMapping("")
-	@ResponseBody List<Project> blah() {
+	@ResponseBody List<Project> index() {
 		return projectStore.list()
 	}
 

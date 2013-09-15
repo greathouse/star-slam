@@ -26,17 +26,10 @@ ko.extenders.validation = function(target, propertyName) {
 function Project(data) {
   var self = this;
 
-  self.id = ko.observable(data.id)
+  self.id = ko.observable(data.id);
   self.name = ko.observable(data.name);
   self.rootPath = ko.observable(data.rootPath);
   self.fileGlob = ko.observable(data.fileGlob);
-
-  self.init = function(data) {
-	self.id(data.id);
-	self.name(data.name);
-	self.rootPath(data.rootPath);
-	self.fileGlob(data.fileGlob);
-  }
 
   self.startScan = function() {
   	$.ajax("/projects/"+self.id()+"/scans", {
@@ -46,6 +39,18 @@ function Project(data) {
   		}
   	});
   };
+}
+
+function Scan(data) {
+	var self = this;
+	self.id = ko.observable(data.id);
+	self.productionDate = ko.observable(data.productionDate);
+	self.fileGlob = ko.observable(data.fileGlob);
+	self.status = ko.observable(data.status);
+	self.processingTime = ko.observable(data.processingTime);
+	self.rootPath = ko.observable(data.rootPath);
+	self.completionTime = ko.observable(data.completionTime);
+	self.initiatedTime = ko.observable(data.initatedTime);
 }
 
 function NewProjectViewModel() {
@@ -92,9 +97,34 @@ function ProjectListViewModel() {
   }, self, "projectCreated");
 }
 
+function ProjectDetailViewModel() {
+	//Data
+	var self = this;
+	self.scans = ko.observableArray([]);
+
+	//Load Scans
+	$.getJSON("/projects")
+}
+
 function FormError(id, message) {
 	$('#'+id).addClass('error');
 }
+
+Sammy(function() {
+	this.get('#:folder', function() {
+		self.chosenFolderId(this.params.folder);
+		self.chosenMailData(null);
+		$.get("/mail", { folder: this.params.folder }, self.chosenFolderData);
+	});
+
+	this.get('#:folder/:mailId', function() {
+		self.chosenFolderId(this.params.folder);
+		self.chosenFolderData(null);
+		$.get("/mail", { mailId: this.params.mailId }, self.chosenMailData);
+	});
+
+	this.get('', function() { this.app.runRoute('get', '#Inbox') });
+}).run();
 
 ko.applyBindings(new ProjectListViewModel(), $('#projectList')[0]);
 ko.applyBindings(new NewProjectViewModel(), $('#projectForm')[0]);
