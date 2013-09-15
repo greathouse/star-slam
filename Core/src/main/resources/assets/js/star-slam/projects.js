@@ -53,8 +53,12 @@ function Scan(data) {
 	self.status = ko.observable(data.status);
 	self.processingTime = ko.observable(data.processingTime);
 	self.rootPath = ko.observable(data.rootPath);
-	self.completionTime = ko.observable(data.completionTime);
-	self.initiatedTime = ko.observable(data.initiatedTime);
+	self.completionTime = ko.observable(moment(data.completionTime));
+	self.initiatedTime = ko.observable(moment(data.initiatedTime));
+
+	self.processingTimeSeconds = ko.computed(function() {
+		return self.processingTime() / 1000;
+	})
 }
 
 function View(templateName, data) {
