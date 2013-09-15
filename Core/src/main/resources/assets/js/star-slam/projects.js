@@ -53,6 +53,12 @@ function Scan(data) {
 	self.initiatedTime = ko.observable(data.initatedTime);
 }
 
+function ContentViewModel(templateName, data) {
+	var self = this;
+	self.data = data;
+	self.templateName = templateName;
+}
+
 function NewProjectViewModel() {
   var self = this;
 
@@ -110,21 +116,14 @@ function FormError(id, message) {
 	$('#'+id).addClass('error');
 }
 
-Sammy(function() {
-	this.get('#:folder', function() {
-		self.chosenFolderId(this.params.folder);
-		self.chosenMailData(null);
-		$.get("/mail", { folder: this.params.folder }, self.chosenFolderData);
-	});
+var contentViewModel = {
+	views: ko.observableArray([
+		new ContentViewModel("projectListTemplate", new ProjectListViewModel())
+		, new ContentViewModel("projectDetailsTemplate", new ProjectDetailViewModel())
+	])
+	, selectedView: ko.observable()
+};
+contentViewModel.selectedView(contentViewModel.views()[0]);
+ko.applyBindings(contentViewModel, $('#content')[0])
 
-	this.get('#:folder/:mailId', function() {
-		self.chosenFolderId(this.params.folder);
-		self.chosenFolderData(null);
-		$.get("/mail", { mailId: this.params.mailId }, self.chosenMailData);
-	});
-
-	this.get('', function() { this.app.runRoute('get', '#Inbox') });
-}).run();
-
-ko.applyBindings(new ProjectListViewModel(), $('#projectList')[0]);
 ko.applyBindings(new NewProjectViewModel(), $('#projectForm')[0]);

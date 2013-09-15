@@ -12,6 +12,7 @@
   <script src="js/vendor/sammy-0.7.4.min.js" type="text/javascript"></script>
 </head>
 <body>
+
 <div class="contain-to-grid">
   <nav class="top-bar">
 	<ul class="title-area">
@@ -30,6 +31,11 @@
   </nav>
 </div>
 
+<div id="content" data-bind="with: selectedView">
+  <div data-bind="template: { name: templateName, data: data }"></div>
+</div>
+
+<script id="projectListTemplate" type="text/html">
 <div id="projectList" class="row">
   <table class="large-12 columns">
 	<thead>
@@ -52,6 +58,7 @@
 <div class="row">
   <a href="#" data-reveal-id="new-project-modal">New Project</a>
 </div>
+</script>
 
 <div id="new-project-modal" class="reveal-modal">
   <form id="projectForm">
@@ -77,7 +84,7 @@
   </form>
 </div>
 
-
+<script id="projectDetailsTemplate" type="text/html">
 <div id="projectDetails" class="row" data-bind="with: ">
   <h2 data-bind="name"></h2>
   <table class="large-12 columns">
@@ -97,6 +104,7 @@
 	</tbody>
   </table>
 </div>
+</script>
 
 <script>
   document.write('<script src=/js/vendor/'
