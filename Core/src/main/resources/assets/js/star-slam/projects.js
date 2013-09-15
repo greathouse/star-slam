@@ -39,6 +39,10 @@ function Project(data) {
   		}
   	});
   };
+
+  self.goToDetails = function(project) {
+  	location.hash = project.id();
+  }
 }
 
 function Scan(data) {
@@ -50,10 +54,10 @@ function Scan(data) {
 	self.processingTime = ko.observable(data.processingTime);
 	self.rootPath = ko.observable(data.rootPath);
 	self.completionTime = ko.observable(data.completionTime);
-	self.initiatedTime = ko.observable(data.initatedTime);
+	self.initiatedTime = ko.observable(data.initiatedTime);
 }
 
-function ContentViewModel(templateName, data) {
+function View(templateName, data) {
 	var self = this;
 	self.data = data;
 	self.templateName = templateName;
@@ -103,27 +107,40 @@ function ProjectListViewModel() {
   }, self, "projectCreated");
 }
 
-function ProjectDetailViewModel() {
+function ProjectDetailViewModel(project) {
 	//Data
 	var self = this;
+	self.project = project;
 	self.scans = ko.observableArray([]);
 
 	//Load Scans
-	$.getJSON("/projects")
+	$.getJSON("/projects/"+project.id()+"/scans", function(scanData) {
+		var mappedScans = $.map(scanData, function(item) { return new Scan(item) });
+		self.scans(mappedScans);
+	})
 }
 
 function FormError(id, message) {
 	$('#'+id).addClass('error');
 }
 
-var contentViewModel = {
-	views: ko.observableArray([
-		new ContentViewModel("projectListTemplate", new ProjectListViewModel())
-		, new ContentViewModel("projectDetailsTemplate", new ProjectDetailViewModel())
-	])
-	, selectedView: ko.observable()
-};
-contentViewModel.selectedView(contentViewModel.views()[0]);
-ko.applyBindings(contentViewModel, $('#content')[0])
+function ContentViewModel() {
+	var self = this;
+	self.projectListView = new View("projectListTemplate", new ProjectListViewModel());
+	self.selectedView = ko.observable();
 
+	Sammy(function() {
+    	this.get('#:project', function() {
+    		$.get("/projects/"+this.params.project, {}, function(data, textStatus, xhr) {
+				self.selectedView(new View("projectDetailsTemplate", new ProjectDetailViewModel(new Project(data))));
+			});
+    	});
+
+    	this.get('', function() {
+    		self.selectedView(self.projectListView);
+    	});
+    }).run();
+};
+
+ko.applyBindings(new ContentViewModel(), $('#content')[0])
 ko.applyBindings(new NewProjectViewModel(), $('#projectForm')[0]);
