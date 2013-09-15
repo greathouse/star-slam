@@ -70,6 +70,7 @@ class IScanServiceTest extends TestBase {
 			assert retrieved != null
 			assert retrieved.status == ScanStatus.COMPLETED
 			assert retrieved.processingTime > 0
+			assert retrieved.completionTime != null
 		}
 	}
 	

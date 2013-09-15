@@ -93,7 +93,8 @@ class ScanService implements IScanService {
 			println "Everyone's Processed"
 			def endTime = System.currentTimeMillis()
 			scanMap.status = ScanStatus.COMPLETED
-			scanMap.processingTime = endTime - startTime 
+			scanMap.processingTime = endTime - startTime
+			scanMap.completionTime = new Date()
 			def completeInfo = new ScanInfo(scanMap)
 			scanStore.persist(completeInfo)
 			onComplete(completeInfo)
