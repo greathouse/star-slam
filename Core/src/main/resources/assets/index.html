@@ -48,7 +48,7 @@
 	</thead>
 	<tbody data-bind="foreach: projects, visible: projects().length > 0">
 	<tr>
-	  <td><span data-bind="text: name, click: goToDetails"></span></td>
+	  <td><a data-bind="text: name, click: goToDetails"></a></td>
 	  <td><span data-bind="text: rootPath"></span></td>
 	  <td style="text-align: center"><a href="#" data-bind="click: startScan"><img src="/images/gears.png" /></a></td>
 	</tr>

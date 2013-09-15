@@ -7,7 +7,7 @@ create table Project (
 create primary key on project (id);
 create unique index project_name_uidx on project (name);
 
-create table Scan (
+create table Scan  (
 	ID varchar(50) not null,
 	PROJECT_ID varchar(50) not null,
 	CREATED BIGINT not null,
