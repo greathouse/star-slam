@@ -13,4 +13,5 @@ class ScanInfo {
 	long processingTime
 	ScanStatus status
 	String fileGlob
+	int fileCount
 }

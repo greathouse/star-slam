@@ -95,6 +95,7 @@ class ScanService implements IScanService {
 			scanMap.status = ScanStatus.COMPLETED
 			scanMap.processingTime = endTime - startTime
 			scanMap.completionTime = new Date()
+			scanMap.fileCount = scanStore.filesForScanCount(scanMap.id)
 			def completeInfo = new ScanInfo(scanMap)
 			scanStore.persist(completeInfo)
 			onComplete(completeInfo)

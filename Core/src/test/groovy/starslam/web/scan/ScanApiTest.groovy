@@ -1,19 +1,21 @@
 package starslam.web.scan
 
-import starslam.scan.ScanStatus
+import starslam.AsyncAssert
 import starslam.web.Kettle
 import starslam.web.WebTestBase
 
 class ScanApiTest extends WebTestBase {
 	
-	private String setupWorkspace() {
+	private String setupWorkspace(int numberOfFiles) {
 		def root = rootPath()
-		createFile(root, ".txt")
+		(1..numberOfFiles).each {
+			createFile(root, ".txt")
+		}
 		
 		def projectUrl
 		Kettle.withTea { tea ->
 			tea.post('/projects', [
-				name:"Test1"
+				name:"Test-"+UUID.randomUUID()
 				, rootPath:root.canonicalPath
 				, fileGlob:"*.txt"
 			])
@@ -26,7 +28,9 @@ class ScanApiTest extends WebTestBase {
 	}
 	
 	public void test_InitiateAndGet() {
-		def projectUrl = setupWorkspace()
+		def numberOfFiles = randomInt(1,10)
+		println "Number of files: ${numberOfFiles}"
+		def projectUrl = setupWorkspace(numberOfFiles)
 		
 		def scanUrl
 		Kettle.withTea { tea ->
@@ -40,7 +44,7 @@ class ScanApiTest extends WebTestBase {
 				assert json.id != null
 			}
 		}
-		
+
 		Kettle.withTea { tea ->
 			tea.get(scanUrl)
 			.expectStatus(200)
@@ -49,15 +53,18 @@ class ScanApiTest extends WebTestBase {
 				assert json.status != null
 				assert json.processingTime != null
 				assert json.initiatedTime != null
-				assert json.numberOfFiles != null
 			}
 		}
-		
-		Kettle.withTea { tea ->
-			tea.get(projectUrl+"/scans")
-			.expectStatus(200)
-			.verifyResponse { json ->
-				assert json.size() == 1
+
+		AsyncAssert.run {
+			Kettle.withTea { tea ->
+				tea.get(projectUrl+"/scans")
+					.expectStatus(200)
+					.verifyResponse { json ->
+						assert json.size() == 1
+						assert json[0].status == 'COMPLETED'
+						assert json[0].fileCount == numberOfFiles
+				}
 			}
 		}
 	}

@@ -25,6 +25,7 @@ class ScanController {
 
 	@RequestMapping(value = "/projects/{projectId}/scans", method = RequestMethod.POST)
 	@ResponseBody ResponseEntity<String> post(@RequestBody String body, @PathVariable projectId) {
+		println "Initiated Scan"
 		def scanInfo = scanService.initiate(projectId, {},{},{})
 		def headers = new HttpHeaders()
 		headers."Location" = "/projects/${projectId}/scans/${scanInfo.id}".toString()

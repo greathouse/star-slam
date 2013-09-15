@@ -6,7 +6,7 @@ import starslam.OpenDatabase
 final class ScanStore implements IScanStore {
 	final IDbConnection dbConnector
 	
-	final def scanSelect = "id, project_id, created, completed, production_date, root_path, processing_time, status, file_glob"
+	final def scanSelect = "id, project_id, created, completed, production_date, root_path, processing_time, status, file_glob, file_count"
 	final def scanRowMapper = { it ->
 		return new ScanInfo([
 			id:it.id
@@ -18,6 +18,7 @@ final class ScanStore implements IScanStore {
 			, processingTime:it.processing_time
 			, status:ScanStatus.values()[it.status]
 			, fileGlob:it.file_glob
+			, fileCount:it.file_count
 		])
 	}
 	
@@ -56,6 +57,7 @@ final class ScanStore implements IScanStore {
 						, processing_time
 						, status
 						, file_glob
+						, file_count
 					)
 					key (id)
 					values (
@@ -68,6 +70,7 @@ final class ScanStore implements IScanStore {
 						, ${scan.processingTime}
 						, ${scan.status.ordinal()}
 						, ${scan.fileGlob}
+						, ${scan.fileCount}
 					)
 				""")
 				return id

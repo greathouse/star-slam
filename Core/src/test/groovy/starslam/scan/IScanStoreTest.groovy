@@ -30,6 +30,7 @@ class IScanStoreTest extends TestBase {
 			, processingTime:System.currentTimeMillis()
 			, status:ScanStatus.COMPLETED
 			, fileGlob:"jar,war,ear,properties,xml"
+			, fileCount:69
 		]))
 	}
 	
@@ -44,6 +45,7 @@ class IScanStoreTest extends TestBase {
 		assert expected.processingTime == actual.processingTime
 		assert expected.status == actual.status
 		assert expected.fileGlob == actual.fileGlob
+		assert expected.fileCount == actual.fileCount
 	}
 
 	public void test_PersistAndRetrieve_Success() {
@@ -59,6 +61,7 @@ class IScanStoreTest extends TestBase {
 			, processingTime:System.currentTimeMillis()
 			, status:ScanStatus.COMPLETED
 			, fileGlob:"jar,war,ear,properties,xml"
+			, fileCount: 69
 		])
 		
 		def scanId = scanStore.persist(saveMe)
@@ -143,13 +146,13 @@ class IScanStoreTest extends TestBase {
 		def projectId = createProject()
 		def first = createScan(projectId, new Date().plus(-2))
 		def second = createScan(projectId, new Date().plus(-1))
-		def thrid = createScan(projectId, new Date())
+		def third = createScan(projectId, new Date())
 		
 		def actual = scanStore.scansForProject(projectId)
 		
 		assert actual != null
 		assert actual.size == 3
-		assert thrid == actual[0].id
+		assert third == actual[0].id
 		assert second == actual[1].id
 		assert first == actual[2].id
 	}

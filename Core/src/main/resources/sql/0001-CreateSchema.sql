@@ -16,7 +16,8 @@ create table Scan (
 	PRODUCTION_DATE bigint,
 	PROCESSING_TIME BIGINT,
 	STATUS int not null,
-	FILE_GLOB varchar(100) not null
+	FILE_GLOB varchar(100) not null,
+	FILE_COUNT int
 );
 create primary key on Scan (id);
 alter table Scan add foreign key (project_id) references project(id);

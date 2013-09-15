@@ -91,6 +91,7 @@
   <h2 data-bind="text: project.name()"></h2>
   <table class="large-12 columns">
 	<thead>
+		<th># of Files</th>
 		<th>Started</th>
 		<th>Completed</th>
 		<th>Processing Time</th>
@@ -98,6 +99,7 @@
 	</thead>
 	<tbody data-bind="foreach: scans, visible: scans().length > 0">
 	<tr>
+		<td data-bind="text: fileCount()"></td>
 	  <td data-bind="text: initiatedTime().format('lll')"></td>
 	  <td data-bind="if: completionTime()"><span data-bind="text: completionTime().format('lll')"></span></td>
 	  <td data-bind="text: moment.duration(processingTimeSeconds(), 'seconds').humanize(), attr: { title: processingTimeSeconds() + ' seconds' }"></td>

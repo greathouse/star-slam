@@ -55,6 +55,7 @@ function Scan(data) {
 	self.rootPath = ko.observable(data.rootPath);
 	self.completionTime = ko.observable(moment(data.completionTime));
 	self.initiatedTime = ko.observable(moment(data.initiatedTime));
+	self.fileCount = ko.observable(data.fileCount);
 
 	self.processingTimeSeconds = ko.computed(function() {
 		return self.processingTime() / 1000;

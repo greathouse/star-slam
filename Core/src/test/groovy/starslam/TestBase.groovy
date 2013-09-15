@@ -25,6 +25,8 @@ abstract class TestBase extends TestCase {
 	private static wired = false;
 	protected static File pluginDirectory
 	protected static ApplicationContext context
+
+	private Random random = new Random()
 	
 	public final void setUp() {
 		onPreSetup()
@@ -52,12 +54,16 @@ abstract class TestBase extends TestCase {
 		onPostSetup()
 	}
 
+	protected int randomInt(int min, int max) {
+		return random.nextInt((max - min) + 1) + min;
+	}
+
 	private static void startJetty(def applicationContext) {
 		final def servletHolder = new ServletHolder(new DispatcherServlet(applicationContext))
 		final def context = new ServletContextHandler()
 		context.setContextPath("/")
 		context.addServlet(servletHolder, "/*")
-		final def server = new Server(Integer.valueOf("8080"))
+		final def server = new Server(Integer.valueOf("9090"))
 		server.setHandler(context)
 		server.start()
 	}
