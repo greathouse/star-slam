@@ -1,0 +1,5 @@
+tr.clickable:hover {
+	cursor: pointer;
+	color: White !important;
+	background-color: #50c878;
+}

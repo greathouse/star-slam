@@ -4,6 +4,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
   <title>Star Slam</title>
   <link rel="stylesheet" href="css/foundation.css">
+	<link rel="stylesheet" href="css/starslam.css">
 
   <script src="js/vendor/jquery.js" type="text/javascript"></script>
   <script src="js/vendor/underscore-min.js" type="text/javascript"></script>
@@ -102,7 +103,7 @@
 		<th>Status</th>
 	</thead>
 	<tbody data-bind="foreach: scans, visible: scans().length > 0">
-	<tr data-bind="click: goToDetails">
+	<tr class="clickable" data-bind="click: goToDetails">
 		<td data-bind="text: fileCount()"></td>
 	  <td data-bind="text: initiatedTime().format('lll')"></td>
 	  <td data-bind="if: completionTime()"><span data-bind="text: completionTime().format('lll')"></span></td>
