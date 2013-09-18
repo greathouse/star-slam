@@ -53,6 +53,8 @@ class ScanApiTest extends WebTestBase {
 				assert json.status != null
 				assert json.processingTime != null
 				assert json.initiatedTime != null
+				assert json.id != null
+				assert json.projectId != null
 			}
 		}
 

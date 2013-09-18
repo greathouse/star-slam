@@ -41,13 +41,14 @@ function Project(data) {
   };
 
   self.goToDetails = function(project) {
-  	location.hash = project.id();
+  	location.hash = "/"+project.id();
   }
 }
 
 function Scan(data) {
 	var self = this;
 	self.id = ko.observable(data.id);
+	self.projectId = ko.observable(data.projectId);
 	self.productionDate = ko.observable(data.productionDate);
 	self.fileGlob = ko.observable(data.fileGlob);
 	self.status = ko.observable(data.status);
@@ -60,6 +61,24 @@ function Scan(data) {
 	self.processingTimeSeconds = ko.computed(function() {
 		return self.processingTime() / 1000;
 	})
+
+	self.goToDetails = function(scan) {
+		location.hash = "/"+self.projectId()+"/"+self.id();
+	}
+}
+
+function ScannedFile(data) {
+	var self = this;
+	self.id = ko.observable(data.id);
+	self.scanId = ko.observable(data.scandId);
+	self.filename = ko.observable(data.filename);
+	self.relativePath = ko.observable(data.relativePath);
+	self.fullPath = ko.observable(data.fullPath);
+	self.isNew = ko.observable(data.isNew);
+	self.hasChanged = ko.observable(data.hasChanged);
+	self.data = ko.observable(data.data);
+	self.scannerPlugin = ko.observable(data.scannerPlugin);
+	self.md5 = ko.observable(data.md5);
 }
 
 function View(templateName, data) {
@@ -125,6 +144,19 @@ function ProjectDetailViewModel(project) {
 	})
 }
 
+function ScanDetailViewModel(projectId, scan) {
+	//Data
+	var self = this;
+	self.scan = scan;
+	self.files = ko.observableArray([]);
+
+	//Load Files
+	$.getJSON("/projects/"+projectId+"/scans/"+scan.id()+"/files", function(fileData) {
+		var mappedFiles = $.map(fileData, function(item) { return new ScannedFile(item) });
+		self.files(mappedFiles);
+	})
+}
+
 function FormError(id, message) {
 	$('#'+id).addClass('error');
 }
@@ -135,16 +167,23 @@ function ContentViewModel() {
 	self.selectedView = ko.observable();
 
 	Sammy(function() {
-    	this.get('#:project', function() {
-    		$.get("/projects/"+this.params.project, {}, function(data, textStatus, xhr) {
+		this.get('#/:project', function() {
+			$.get("/projects/"+this.params.project, {}, function(data, textStatus, xhr) {
 				self.selectedView(new View("projectDetailsTemplate", new ProjectDetailViewModel(new Project(data))));
 			});
-    	});
+		});
 
-    	this.get('', function() {
-    		self.selectedView(self.projectListView);
-    	});
-    }).run();
+		this.get('#/:project/:scanId', function() {
+			var route = this;
+			$.get("/projects/"+this.params.project+"/scans/"+this.params.scanId, {}, function(data, textStatus, xhr) {
+				self.selectedView(new View("scanDetailsTemplate", new ScanDetailViewModel(route.params.project,new Scan(data))));
+			});
+		});
+
+		this.get('', function() {
+			self.selectedView(self.projectListView);
+		});
+	}).run();
 };
 
 ko.applyBindings(new ContentViewModel(), $('#content')[0])
