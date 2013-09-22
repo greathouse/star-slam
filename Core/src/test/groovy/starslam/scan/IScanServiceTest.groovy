@@ -1,5 +1,6 @@
 package starslam.scan
 
+import org.junit.Ignore
 import starslam.AsyncAssert
 import starslam.TestBase
 import starslam.project.IProjectStore
@@ -53,19 +54,43 @@ class IScanServiceTest extends TestBase {
 		assert scanInfo != null
 		assert ScanStatus.IN_PROGRESS ==  scanInfo.status
 	}
-	
+
+//	@Ignore
+//	public void test_Initiate_NoFiles_ShouldCallOnComplete() {
+//		def calledClosure = false
+//		def scanInfo = null
+//
+//		def projectId = createProject(rootPath().toString())
+//		impl.initiate(projectId, {}, {},{x -> calledClosure = true; scanInfo = x })
+//
+//		AsyncAssert.run {
+//			assert calledClosure
+//			assert scanInfo != null
+//			assert scanInfo.status == ScanStatus.COMPLETED
+//
+//			def retrieved = scanStore.retrieveScan(scanInfo.id)
+//			assert retrieved != null
+//			assert retrieved.status == ScanStatus.COMPLETED
+//			assert retrieved.processingTime > 0
+//			assert retrieved.completionTime != null
+//		}
+//	}
+
 	public void test_Initiate_ShouldCallOnComplete() {
 		def calledClosure = false
 		def scanInfo = null
-		
-		def projectId = createProject(rootPath().toString())
+
+		def path = rootPath()
+		def projectId = createProject(path.toString())
+		createFile(path, ".txt")
+
 		impl.initiate(projectId, {}, {},{x -> calledClosure = true; scanInfo = x })
-		
+
 		AsyncAssert.run {
 			assert calledClosure
 			assert scanInfo != null
 			assert scanInfo.status == ScanStatus.COMPLETED
-			
+
 			def retrieved = scanStore.retrieveScan(scanInfo.id)
 			assert retrieved != null
 			assert retrieved.status == ScanStatus.COMPLETED

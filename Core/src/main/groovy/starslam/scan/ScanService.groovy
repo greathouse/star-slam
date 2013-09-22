@@ -50,12 +50,12 @@ class ScanService implements IScanService {
 		scanMap.id = scanStore.persist(info)
 		info = new ScanInfo(scanMap)
 		onBegin(info)
-		
+
 		def processFile = { File file ->
 			def md5 = generateMd5(file)
 			def relativePath = file.canonicalPath.replace(project.rootPath, '')
 			def existing = previousFiles[relativePath]
-			
+
 			def scannedFileMap = [
 				scanId:info.id
 				, filename:file.name
@@ -73,64 +73,57 @@ class ScanService implements IScanService {
 			afterFile(scannedFile)
 		}
 
-		def fileConsumer = Actors.actor {
-			def globMatcher = new AntPathMatcher()
-			globMatcher.setPathSeparator(System.getProperty("file.separator"))
-			loop {
-				println "Waiting..."
-				react { msg ->
-					def file = msg.file
-					if (file == null) {
-						sender.send(msg.dir.canonicalPath)
-						return
-					}
-					def fileName = file.canonicalPath.replaceAll('\\\\','/').substring(info.rootPath.length() + 1)
-					if (info.fileGlob.split(/\|/).any {pattern -> println pattern ; globMatcher.match(pattern, fileName) }) {
-						println "Matches: " + file.canonicalPath
-						processFile(file)
-					}
-					else {
-						println "NOT: "+file.canonicalPath
-					}
-				}
+		def globMatcher = new AntPathMatcher()
+		globMatcher.setPathSeparator(System.getProperty("file.separator"))
+		def fileConsumer = Actors.reactor { File file ->
+			def fileName = file.canonicalPath.replaceAll('\\\\','/').substring(info.rootPath.length() + 1)
+			if (info.fileGlob.split(/\|/).any {pattern -> globMatcher.match(pattern, fileName) }) {
+				println "FileConsumer: Matches: " + file.canonicalPath
+				processFile(file)
+				println "FileConsumer: Processed: " + file.canonicalPath
 			}
+			reply file.canonicalPath
 		}
 
 		def directoryConsumer = Actors.actor {
+			def files = [:]
 			loop {
 				react { dir ->
-					println "directoryConsumer received: "+dir.canonicalPath + "(${dir.class})"
+					println "DirectoryConsumer: Received: "+dir.canonicalPath
 					dir.eachDir { subDir ->
-						println "directoryConsumer->master: "+subDir.canonicalPath
+						println "DirectoryConsumer: directoryConsumer->master: "+subDir.canonicalPath
 						sender.send(subDir)
 					}
 
+					def replyChannel = sender
 					dir.eachFile(FileType.FILES) { file ->
-						println 'Sending to fileConsumer: '+file.canonicalPath
-						fileConsumer.send (["file":file, "dir":dir])
+						files[file.canonicalPath] = false
+						println 'DirectoryConsumer: Sending to fileConsumer: '+file.canonicalPath
+						fileConsumer.sendAndContinue file, {
+							println "DirectoryConsumer: continue: "+it
+							files[file.canonicalPath] = true
+							if (files.values().findIndexOf { it == false } < 0) {
+								replyChannel.send "All Done"
+							}
+						}
+						println "DirectoryConsumer: Sent to fileConsumer: " +file.canonicalPath
 					}
-					fileConsumer.send (["file":null, "dir":dir], sender)
 				}
 			}
 		}
 
 		def master = Actors.actor {
-			def searchDirs = [:]
 			loop {
 				react {	dir ->
 					switch(dir) {
 						case File:
-							println 'Sending to directoryConsumer: '+dir.canonicalPath
-							searchDirs[dir.canonicalPath] = false
+							println 'Master: Sending to directoryConsumer: '+dir.canonicalPath
 							directoryConsumer.send(dir)
 							break
 						case String:
-							searchDirs[dir] = true
-							if (searchDirs.values().findIndexOf { it == false } < 0) {
-								terminate()
-							}
+							println 'Master: Terminate'
+							terminate()
 					}
-//					fileConsumer.send null
 				}
 			}
 		}
@@ -140,7 +133,7 @@ class ScanService implements IScanService {
 //			finder.execute(project.rootPath)
 			master.send(new File(project.rootPath))
 			//fileConsumer.send null
-			
+
 			master.join()
 			println "Everyone's Processed"
 			def endTime = System.currentTimeMillis()
