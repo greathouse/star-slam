@@ -1,6 +1,8 @@
 package starslam.scan
 
+import groovy.io.FileType
 import groovyx.gpars.actor.Actors
+import org.springframework.util.AntPathMatcher
 
 import java.nio.file.*
 import java.security.MessageDigest
@@ -70,26 +72,76 @@ class ScanService implements IScanService {
 			scannedFile = new ScannedFile(scannedFileMap)
 			afterFile(scannedFile)
 		}
-		
-		def consumer = Actors.actor {
+
+		def fileConsumer = Actors.actor {
+			def globMatcher = new AntPathMatcher()
+			globMatcher.setPathSeparator(System.getProperty("file.separator"))
 			loop {
 				println "Waiting..."
-				react { file ->
+				react { msg ->
+					def file = msg.file
 					if (file == null) {
-						terminate()
+						sender.send(msg.dir.canonicalPath)
 						return
 					}
-					processFile(file)
+					def fileName = file.canonicalPath.replaceAll('\\\\','/').substring(info.rootPath.length() + 1)
+					if (info.fileGlob.split(/\|/).any {pattern -> println pattern ; globMatcher.match(pattern, fileName) }) {
+						println "Matches: " + file.canonicalPath
+						processFile(file)
+					}
+					else {
+						println "NOT: "+file.canonicalPath
+					}
+				}
+			}
+		}
+
+		def directoryConsumer = Actors.actor {
+			loop {
+				react { dir ->
+					println "directoryConsumer received: "+dir.canonicalPath + "(${dir.class})"
+					dir.eachDir { subDir ->
+						println "directoryConsumer->master: "+subDir.canonicalPath
+						sender.send(subDir)
+					}
+
+					dir.eachFile(FileType.FILES) { file ->
+						println 'Sending to fileConsumer: '+file.canonicalPath
+						fileConsumer.send (["file":file, "dir":dir])
+					}
+					fileConsumer.send (["file":null, "dir":dir], sender)
+				}
+			}
+		}
+
+		def master = Actors.actor {
+			def searchDirs = [:]
+			loop {
+				react {	dir ->
+					switch(dir) {
+						case File:
+							println 'Sending to directoryConsumer: '+dir.canonicalPath
+							searchDirs[dir.canonicalPath] = false
+							directoryConsumer.send(dir)
+							break
+						case String:
+							searchDirs[dir] = true
+							if (searchDirs.values().findIndexOf { it == false } < 0) {
+								terminate()
+							}
+					}
+//					fileConsumer.send null
 				}
 			}
 		}
 		
 		Thread.start {
-			def finder = new FileFinder(info.fileGlob, {f -> println f.canonicalFile ; consumer.send f})
-			finder.execute(project.rootPath)
-			consumer.send null
+//			def finder = new FileFinder(info.fileGlob, {f -> println f.canonicalFile ; fileConsumer.send f})
+//			finder.execute(project.rootPath)
+			master.send(new File(project.rootPath))
+			//fileConsumer.send null
 			
-			consumer.join()
+			master.join()
 			println "Everyone's Processed"
 			def endTime = System.currentTimeMillis()
 			scanMap.status = ScanStatus.COMPLETED

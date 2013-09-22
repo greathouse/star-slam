@@ -121,7 +121,7 @@ class IScanServiceTest extends TestBase {
 	public void test_Initiate_WithFilesInSubDirectories_ShouldCallAfterFile() {
 		def path = rootPath()
 		def file = createFile(path, "subdir", ".txt")
-		def projectId = createProject(path.toString(), 'subdir/*.txt')
+		def projectId = createProject(path.toString(), '/subdir/*.txt')
 						
 		def filecount = 0
 		def scannedFile = null
@@ -169,7 +169,7 @@ class IScanServiceTest extends TestBase {
 		def nonMatchFiles = []
 		nonMatchFiles << createFile(path, ".exe")
 		
-		def projectId = createProject(path.toString(), "*"+validExtension1+"|*"+validExtension2+"|"+subdir+'/'+fullfile.name)
+		def projectId = createProject(path.toString(), "*"+validExtension1+"|*"+validExtension2+"|/"+subdir+'/'+fullfile.name)
 		def afterFiles = []
 						
 		def filecount = 0
