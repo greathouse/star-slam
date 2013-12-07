@@ -19,6 +19,7 @@ class Bootstrapper {
 	Bootstrapper porpoise(String dbUrl) {
 		def parent = getClass().getClassLoader()
 		def loader = new GroovyClassLoader(parent)
+		println "Parent: ${parent}; Loader: ${loader}"
 		def groovyClass = loader.parseClass(parent.getResourceAsStream("porpoise/Porpoise.groovy").text)
 		
 		def tempSqlDir = Files.createTempDir()
