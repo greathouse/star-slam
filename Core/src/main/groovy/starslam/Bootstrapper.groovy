@@ -19,7 +19,7 @@ class Bootstrapper {
 	Bootstrapper porpoise(String dbUrl) {
 		def parent = getClass().getClassLoader()
 		def loader = new GroovyClassLoader(parent)
-		def groovyClass = loader.parseClass(parent.getResourceAsStream("porpoise/Porpoise.groovy"),"porpoise/Porpoise.groovy")
+		def groovyClass = loader.parseClass(parent.getResourceAsStream("porpoise/Porpoise.groovy").text)
 		
 		def tempSqlDir = Files.createTempDir()
 		def sqlfiles = new Reflections("sql", new ResourcesScanner()).getResources(Pattern.compile(".*\\.sql"))
@@ -54,7 +54,7 @@ class Bootstrapper {
 
 		def webPort = System.getenv("PORT")
 		if (webPort == null || webPort.isEmpty()) {
-				webPort = "8080"
+				webPort = "9069"
 		}
 
 		final def server = new Server(Integer.valueOf(webPort))
