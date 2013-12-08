@@ -73,10 +73,16 @@ class ScanService implements IScanService {
 			afterFile(scannedFile)
 		}
 
+		def normalizeFilename = { File file ->
+			def name = file.canonicalPath.replaceAll('\\\\','/').substring(info.rootPath.length() + 1)
+			return (name.startsWith("/"))? name : "/"+name
+		}
+
 		def globMatcher = new AntPathMatcher()
 		globMatcher.setPathSeparator(System.getProperty("file.separator"))
+
 		def fileConsumer = Actors.reactor { File file ->
-			def fileName = file.canonicalPath.replaceAll('\\\\','/').substring(info.rootPath.length() + 1)
+			def fileName = normalizeFilename(file)
 			println "FileConsumer: Received File: " + fileName
 			if (info.fileGlob.split(/\|/).any {pattern -> globMatcher.match(pattern, fileName) }) {
 				println "FileConsumer: Matches: " + file.canonicalPath

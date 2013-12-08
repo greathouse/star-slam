@@ -187,7 +187,6 @@ class IScanServiceTest extends TestBase {
 		files << createFile(path, validExtension2)
 		
 		def subdir = "subdir"
-		def filename = "full-file.dll"
 		def fullfile = createFile(path, subdir, ".dll")
 		files << fullfile
 		println "Full Filename: $fullfile.name"
