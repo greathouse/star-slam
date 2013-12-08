@@ -74,7 +74,7 @@ class IPluginServiceTest extends TestBase {
 		return executableFile
 	}
 
-	@Ignore(format("Needs to run on Windows machine"))
+	@Ignore("Needs to run on Windows machine")
 	public void test_ExternalPlugin_RelativePathInJsonFile_ShouldStillExecute() {
 		def executable = copyPluginExecutable()
 		

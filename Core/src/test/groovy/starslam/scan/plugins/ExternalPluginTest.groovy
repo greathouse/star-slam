@@ -23,7 +23,7 @@ class ExternalPluginTest extends TestBase {
 		impl = new ExternalPlugin("fileinfo.v1", executablePath)
 	}
 
-	@Ignore(format("Needs to run on Windows machine"))
+	@Ignore("Needs to run on Windows machine")
 	public void test_FileInfo_GeneratesOutput() {
 		def actual = impl.process(executableFile)
 		
