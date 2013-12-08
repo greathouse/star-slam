@@ -6,6 +6,7 @@ import com.google.common.io.Files
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.servlet.ServletContextHandler
 import org.eclipse.jetty.servlet.ServletHolder
+import org.junit.Before
 import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext
@@ -15,7 +16,7 @@ import starslam.scan.ScanModuleConfiguration
 import starslam.scan.plugins.PluginModuleConfiguration
 import starslam.web.WebConfig
 
-abstract class TestBase extends TestCase {
+abstract class TestBase {
 	protected Sql sql
 
 	protected void onPreSetup() {}
@@ -27,7 +28,8 @@ abstract class TestBase extends TestCase {
 	protected static ApplicationContext context
 
 	private Random random = new Random()
-	
+
+	@Before
 	public final void setUp() {
 		onPreSetup()
 

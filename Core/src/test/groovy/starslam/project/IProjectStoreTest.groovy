@@ -1,5 +1,6 @@
 package starslam.project
 
+import org.junit.Test
 import starslam.TestBase
 
 class IProjectStoreTest extends TestBase {
@@ -30,8 +31,9 @@ class IProjectStoreTest extends TestBase {
 		assert saveMe.rootPath == updated.rootPath
 		assert saveMe.fileGlob == updated.fileGlob
 	}
-	
-	public void testCreateReadUpdate() {
+
+	@Test
+	public void createReadUpdate() {
 		def persist = new Project([
 			name:"Test Name"
 			, rootPath:"C:/here"
@@ -40,8 +42,9 @@ class IProjectStoreTest extends TestBase {
 		
 		saveRetrieveUpdate(persist)		
 	}
-	
-	public void testCreateMultiple() {
+
+	@Test
+	public void createMultiple() {
 		def persist1 = new Project([
 			name:"Test Name"
 			, rootPath:"C:/first"
@@ -57,8 +60,9 @@ class IProjectStoreTest extends TestBase {
 		saveRetrieveUpdate(persist1)
 		saveRetrieveUpdate(persist2)
 	}
-	
-	public void test_SameProjectName_ThrowsException() {
+
+	@Test
+	public void sameProjectName_ThrowsException() {
 		def saveTwice = new Project([
 			name:"Test Name"
 			, rootPath:"C:/first"
@@ -81,8 +85,9 @@ class IProjectStoreTest extends TestBase {
 		impl.persist(rtn)
 		return rtn
 	}
-	
-	public void test_List() {
+
+	@Test
+	public void list() {
 		def e1 = create("Test 1")
 		def e2 = create("Test 2")
 		def e3 = create("Test 3")

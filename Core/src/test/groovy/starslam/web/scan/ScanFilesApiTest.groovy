@@ -1,5 +1,6 @@
 package starslam.web.scan
 
+import org.junit.Test
 import starslam.AsyncAssert
 import starslam.web.Kettle
 import starslam.web.WebTestBase
@@ -33,8 +34,9 @@ class ScanFilesApiTest extends WebTestBase {
 		}
 		return scanUrl
 	}
-	
-	public void test_InitiateAndGet() {
+
+	@Test
+	public void initiateAndGet() {
 		def scanUrl = setupWorkspace() 
 		
 		AsyncAssert.run {

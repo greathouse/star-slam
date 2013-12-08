@@ -1,6 +1,7 @@
 package starslam.scan
 
 import org.junit.Ignore
+import org.junit.Test
 import starslam.AsyncAssert
 import starslam.TestBase
 import starslam.project.IProjectStore
@@ -24,8 +25,9 @@ class IScanServiceTest extends TestBase {
 	private String createProject(String rootPath, String fileGlob) {
 		return projectStore.persist(new Project(null, UUID.randomUUID().toString(), rootPath, fileGlob))
 	}
-	
-	public void test_Initiate_ShouldReturnScanInfo_AndBeRetrievableFromTheScanStore() {
+
+	@Test
+	public void initiate_ShouldReturnScanInfo_AndBeRetrievableFromTheScanStore() {
 		def rootPath = rootPath().canonicalPath
 		def fileGlob = "*.exe"
 		def projectId = createProject(rootPath, fileGlob)
@@ -42,8 +44,9 @@ class IScanServiceTest extends TestBase {
 		assert retrieved != null
 		assert actual.id == retrieved.id
 	}
-	
-	public void test_Initiate_ShouldCallOnBegin() {
+
+	@Test
+	public void initiate_ShouldCallOnBegin() {
 		def calledClosure = false
 		def scanInfo = null
 		
@@ -56,7 +59,8 @@ class IScanServiceTest extends TestBase {
 	}
 
 //	@Ignore
-//	public void test_Initiate_NoFiles_ShouldCallOnComplete() {
+//	@Test
+//	public void initiate_NoFiles_ShouldCallOnComplete() {
 //		def calledClosure = false
 //		def scanInfo = null
 //
@@ -76,7 +80,8 @@ class IScanServiceTest extends TestBase {
 //		}
 //	}
 
-	public void test_Initiate_ShouldCallOnComplete() {
+	@Test
+	public void initiate_ShouldCallOnComplete() {
 		def calledClosure = false
 		def scanInfo = null
 
@@ -98,8 +103,9 @@ class IScanServiceTest extends TestBase {
 			assert retrieved.completionTime != null
 		}
 	}
-	
-	public void test_Initiate_ShouldCallAfterFile() {
+
+	@Test
+	public void initiate_ShouldCallAfterFile() {
 		def path = rootPath()
 		def file = createFile(path, ".txt")
 		def projectId = createProject(path.toString())
@@ -119,8 +125,9 @@ class IScanServiceTest extends TestBase {
 			assert scannedFile.md5 != null
 		}
 	}
-	
-	public void test_Initiate_WithMultipleFilesInRoot_ShouldCallAfterFile() {
+
+	@Test
+	public void initiate_WithMultipleFilesInRoot_ShouldCallAfterFile() {
 		def path = rootPath()
 		def files = []
 		def validExtension = ".txt"
@@ -142,8 +149,9 @@ class IScanServiceTest extends TestBase {
 			assert afterFiles.size() == files.size()
 		}
 	}
-	
-	public void test_Initiate_WithFilesInSubDirectories_ShouldCallAfterFile() {
+
+	@Test
+	public void initiate_WithFilesInSubDirectories_ShouldCallAfterFile() {
 		def path = rootPath()
 		def file = createFile(path, "subdir", ".txt")
 		def projectId = createProject(path.toString(), '/subdir/*.txt')
@@ -156,8 +164,9 @@ class IScanServiceTest extends TestBase {
 			assert filecount == 1
 		}
 	}
-	
-	public void test_Initiate_MultipleInitiates_ScannedFileShouldNotBeNewOrChanged() {
+
+	@Test
+	public void initiate_MultipleInitiates_ScannedFileShouldNotBeNewOrChanged() {
 		def path = rootPath().canonicalPath
 		def file = createFile(path, ".txt")
 		def projectId = createProject(path.toString())
@@ -176,8 +185,9 @@ class IScanServiceTest extends TestBase {
 			assert scannedFile.hasChanged == false
 		}
 	}
-	
-	public void test_Initiate_WithMultipleGlobPattern_ShouldCallAfterFile() {
+
+	@Test
+	public void initiate_WithMultipleGlobPattern_ShouldCallAfterFile() {
 		def path = rootPath()
 		def files = []
 		def validExtension1 = ".txt"
@@ -206,7 +216,8 @@ class IScanServiceTest extends TestBase {
 		}
 	}
 
-	public void test_Initiate_SpecificFileWithoutLeadingSlash_ShouldCallAfterFile() {
+	@Test
+	public void initiate_SpecificFileWithoutLeadingSlash_ShouldCallAfterFile() {
 		def path = rootPath()
 		def files = []
 

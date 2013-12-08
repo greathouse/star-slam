@@ -1,6 +1,7 @@
 package starslam.scan.plugins
 
 import org.junit.Ignore
+import org.junit.Test
 
 import static groovy.json.JsonOutput.toJson
 import starslam.TestBase
@@ -32,8 +33,9 @@ class IPluginServiceTest extends TestBase {
 		new File(subdir, "plugin.json").withWriter { w -> w.write(toJson(json)) }
 		return subdir
 	}
-	
-	public void test_Get_Txt_ShouldReturnDefaultTextFilePlugin() {
+
+	@Test
+	public void get_Txt_ShouldReturnDefaultTextFilePlugin() {
 		def file = createFile("sample.txt", "This is my sample text.")
 		
 		def actual = impl.get(file)
@@ -41,8 +43,9 @@ class IPluginServiceTest extends TestBase {
 		assert actual != null
 		assert actual.name == 'internal-txt.v1'
 	}
-	
-	public void test_Get_Xml_ShouldReturnDefaultXmlFilePlugin() {
+
+	@Test
+	public void get_Xml_ShouldReturnDefaultXmlFilePlugin() {
 		def file = createFile("sample.xml", "<xml></xml>")
 		
 		def actual = impl.get(file)
@@ -50,8 +53,9 @@ class IPluginServiceTest extends TestBase {
 		assert actual != null
 		assert actual.name == 'internal-xml.v1'
 	}
-	
-	public void test_Get_ExternalPlugin_ShouldLoadAndReturnExternalPlugin() {
+
+	@Test
+	public void get_ExternalPlugin_ShouldLoadAndReturnExternalPlugin() {
 		def pluginName = 'external.v1'
 		def filetype = 'dll'
 		def file = createFile("some.${filetype}", "0010101011110101001001010010100101001")
@@ -75,7 +79,8 @@ class IPluginServiceTest extends TestBase {
 	}
 
 	@Ignore("Needs to run on Windows machine")
-	public void test_ExternalPlugin_RelativePathInJsonFile_ShouldStillExecute() {
+	@Test
+	public void externalPlugin_RelativePathInJsonFile_ShouldStillExecute() {
 		def executable = copyPluginExecutable()
 		
 		def plugin = impl.get(executable)

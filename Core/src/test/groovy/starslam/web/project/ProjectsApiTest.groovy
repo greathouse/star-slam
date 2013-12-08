@@ -1,5 +1,6 @@
 package starslam.web.project
 
+import org.junit.Test
 import starslam.web.Kettle
 import starslam.web.WebTestBase
 
@@ -15,8 +16,9 @@ class ProjectsApiTest extends WebTestBase {
 			, fileGlob:"*.txt"
 		]
 	}
-	
-	public void test_Success() {
+
+	@Test
+	public void success() {
 		Kettle.withTea { tea ->
 			tea.post(URL, successfulProjectBody())
 			.expectStatus(200)
@@ -29,8 +31,9 @@ class ProjectsApiTest extends WebTestBase {
 			}
 		} 
 	}
-	
-	public void test_DuplicateName() {
+
+	@Test
+	public void duplicateName() {
 		def body = successfulProjectBody()
 		
 		Kettle.withTea { tea ->
@@ -52,8 +55,9 @@ class ProjectsApiTest extends WebTestBase {
 			}
 		}
 	}
-	
-	public void test_Update() {
+
+	@Test
+	public void update() {
 		def viewUrl
 		def project = successfulProjectBody()
 		Kettle.withTea { tea ->
@@ -93,8 +97,9 @@ class ProjectsApiTest extends WebTestBase {
 			.expectStatus(200)
 		}
 	}
-	
-	public void test_List() {
+
+	@Test
+	public void list() {
 		create("test 1")
 		create("test 2")
 		create("test 3")
@@ -107,8 +112,9 @@ class ProjectsApiTest extends WebTestBase {
 			}
 		}
 	}
-	
-	public void test_Required() {
+
+	@Test
+	public void required() {
 		Kettle.withTea { tea ->
 			tea.post(URL, [:])
 			.expectStatus(400)

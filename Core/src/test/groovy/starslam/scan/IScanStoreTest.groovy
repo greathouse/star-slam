@@ -1,5 +1,6 @@
 package starslam.scan
 
+import org.junit.Test
 import starslam.TestBase
 import starslam.project.IProjectStore
 import starslam.project.Project
@@ -48,7 +49,8 @@ class IScanStoreTest extends TestBase {
 		assert expected.fileCount == actual.fileCount
 	}
 
-	public void test_PersistAndRetrieve_Success() {
+	@Test
+	public void persistAndRetrieve_Success() {
 		def projectId = createProject()
 		createScan(projectId, new Date().plus(1))
 		
@@ -68,8 +70,9 @@ class IScanStoreTest extends TestBase {
 		
 		assertScan(scanId, saveMe, scanStore.retrieveScan(scanId))
 	}
-	
-	public void test_Persist_WithOptionalFields_ShouldBeRetrieved() {
+
+	@Test
+	public void persist_WithOptionalFields_ShouldBeRetrieved() {
 		def projectId = createProject()
 		def expected = new ScanInfo([
 			projectId:projectId
@@ -87,8 +90,9 @@ class IScanStoreTest extends TestBase {
 		assert actual.productionDate  == null
 		assert actual.completionTime == null
 	}
-	
-	public void test_Persist_AndUpdate_ShouldOnlyCreateOneScanForTheProject() {
+
+	@Test
+	public void persist_AndUpdate_ShouldOnlyCreateOneScanForTheProject() {
 		def projectId = createProject()
 		def expected = new ScanInfo([
 			projectId:projectId
@@ -106,13 +110,15 @@ class IScanStoreTest extends TestBase {
 		def actualProjectScans = scanStore.scansForProject(projectId)
 		assert 1 == actualProjectScans.size()
 	}
-	
-	public void test_Retrieve_NotFound_ShouldReturnNull() {
+
+	@Test
+	public void retrieve_NotFound_ShouldReturnNull() {
 		def actual = scanStore.retrieveScan(UUID.randomUUID().toString())
 		assert actual == null
 	}
-	
-	public void test_RetrieveLatestScanForProject_Success() {
+
+	@Test
+	public void retrieveLatestScanForProject_Success() {
 		def projectId = createProject()
 		createScan(projectId, new Date().plus(-1))
 		createScan(createProject(), new Date().plus(2))
@@ -135,14 +141,16 @@ class IScanStoreTest extends TestBase {
 		assert expected != actual
 		assertScan(expectedId, expected, actual)
 	}
-	
-	public void test_RetrieveLatestScanForProject_NotFound_ShouldReturnNull() {
+
+	@Test
+	public void retrieveLatestScanForProject_NotFound_ShouldReturnNull() {
 		def projectId = createProject()
 		def actual = scanStore.retrieveLatestScanForProject(projectId)
 		assert actual == null
 	}
-	
-	public void test_ScansForProject_ShouldOrderByDecendingDate() {
+
+	@Test
+	public void scansForProject_ShouldOrderByDecendingDate() {
 		def projectId = createProject()
 		def first = createScan(projectId, new Date().plus(-2))
 		def second = createScan(projectId, new Date().plus(-1))
@@ -192,8 +200,9 @@ class IScanStoreTest extends TestBase {
 		assert expected.scannerPlugin == actual.scannerPlugin
 		assert expected.md5 == actual.md5
 	}
-	
-	public void test_ScannedFile_PersistAndRetrieveByRelativePath_ShouldReturnLatestFileFromScans() {
+
+	@Test
+	public void scannedFile_PersistAndRetrieveByRelativePath_ShouldReturnLatestFileFromScans() {
 		def projectId = createProject()
 		
 		def subdir = "subdir/"
@@ -211,14 +220,16 @@ class IScanStoreTest extends TestBase {
 		
 		assertScannedFile(saveMe, actual)
 	}
-	
-	public void test_ScannedFile_RetrieveByRelativePath_NotFound_ShouldReturnNull() {
+
+	@Test
+	public void scannedFile_RetrieveByRelativePath_NotFound_ShouldReturnNull() {
 		def projectId = createProject()
 		def actual = scanStore.retrieveLatestScannedFileWithRelativePath(projectId, "NotFound.txt")
 		assert actual == null
 	}
-	
-	public void test_FilesForScan_ShouldReturnFileSortedByPath() {
+
+	@Test
+	public void filesForScan_ShouldReturnFileSortedByPath() {
 		def projectId = createProject()
 		def scanId = createScan(projectId, new Date())
 		
@@ -242,8 +253,9 @@ class IScanStoreTest extends TestBase {
 		def actualCount = scanStore.filesForScanCount(scanId)
 		assert actualCount == 4
 	}
-	
-	public void test_FilesForScan_NoFiles_ShouldReturnEmptyList() {
+
+	@Test
+	public void filesForScan_NoFiles_ShouldReturnEmptyList() {
 		def scanId = createScan(createProject(), new Date())
 		def actual = scanStore.filesForScan(scanId)
 		assert actual != null

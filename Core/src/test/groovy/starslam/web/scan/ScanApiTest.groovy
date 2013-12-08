@@ -1,5 +1,6 @@
 package starslam.web.scan
 
+import org.junit.Test
 import starslam.AsyncAssert
 import starslam.web.Kettle
 import starslam.web.WebTestBase
@@ -26,8 +27,9 @@ class ScanApiTest extends WebTestBase {
 		}
 		return projectUrl
 	}
-	
-	public void test_InitiateAndGet() {
+
+	@Test
+	public void initiateAndGet() {
 		def numberOfFiles = randomInt(1,10)
 		println "Number of files: ${numberOfFiles}"
 		def projectUrl = setupWorkspace(numberOfFiles)
