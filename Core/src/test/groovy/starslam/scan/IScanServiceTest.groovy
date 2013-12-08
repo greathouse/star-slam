@@ -131,7 +131,7 @@ class IScanServiceTest extends TestBase {
 		def nonMatchFiles = [] 
 		nonMatchFiles << createFile(path, ".exe")
 		
-		def projectId = createProject(path.toString(), "/*"+validExtension)
+		def projectId = createProject(path.toString(), "*"+validExtension)
 		def afterFiles = []
 						
 		def filecount = 0
@@ -201,6 +201,30 @@ class IScanServiceTest extends TestBase {
 		def scannedFile = null
 		def actual = impl.initiate(projectId, {}, { x -> afterFiles << x }, {})
 		
+		AsyncAssert.run {
+			assert afterFiles.size() == files.size()
+		}
+	}
+
+	public void test_Initiate_SpecificFileWithoutLeadingSlash_ShouldCallAfterFile() {
+		def path = rootPath()
+		def files = []
+
+		def subdir = "subdir"
+		def fullfile = createFile(path, subdir, ".dll")
+		files << fullfile
+		println "Full Filename: $fullfile.name"
+
+		def nonMatchFiles = []
+		nonMatchFiles << createFile(path, ".exe")
+
+		def projectId = createProject(path.toString(), subdir+'/'+fullfile.name)
+		def afterFiles = []
+
+		def filecount = 0
+		def scannedFile = null
+		def actual = impl.initiate(projectId, {}, { x -> afterFiles << x }, {})
+
 		AsyncAssert.run {
 			assert afterFiles.size() == files.size()
 		}

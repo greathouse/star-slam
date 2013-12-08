@@ -81,10 +81,14 @@ class ScanService implements IScanService {
 		def globMatcher = new AntPathMatcher()
 		globMatcher.setPathSeparator(System.getProperty("file.separator"))
 
+		def ensureGlobStartsWithSlash = { glob ->
+			return (glob?.startsWith("/")) ? glob : "/" + glob
+		}
+
 		def fileConsumer = Actors.reactor { File file ->
 			def fileName = normalizeFilename(file)
 			println "FileConsumer: Received File: " + fileName
-			if (info.fileGlob.split(/\|/).any {pattern -> globMatcher.match(pattern, fileName) }) {
+			if (info.fileGlob.split(/\|/).any {pattern -> globMatcher.match(ensureGlobStartsWithSlash(pattern), fileName) }) {
 				println "FileConsumer: Matches: " + file.canonicalPath
 				processFile(file)
 				println "FileConsumer: Processed: " + file.canonicalPath
