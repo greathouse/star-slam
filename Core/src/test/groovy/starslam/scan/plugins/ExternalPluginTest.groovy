@@ -1,6 +1,7 @@
 package starslam.scan.plugins
 
 import groovy.json.JsonOutput
+import org.junit.Ignore
 import starslam.TestBase
 
 
@@ -21,7 +22,8 @@ class ExternalPluginTest extends TestBase {
 		
 		impl = new ExternalPlugin("fileinfo.v1", executablePath)
 	}
-	
+
+	@Ignore(format("Needs to run on Windows machine"))
 	public void test_FileInfo_GeneratesOutput() {
 		def actual = impl.process(executableFile)
 		
