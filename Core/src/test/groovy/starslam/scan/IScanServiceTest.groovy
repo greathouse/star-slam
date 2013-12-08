@@ -61,7 +61,7 @@ class IScanServiceTest extends TestBase {
 //		def scanInfo = null
 //
 //		def projectId = createProject(rootPath().toString())
-//		impl.initiate(projectId, {}, {},{x -> calledClosure = true; scanInfo = x })
+//		pluginService.initiate(projectId, {}, {},{x -> calledClosure = true; scanInfo = x })
 //
 //		AsyncAssert.run {
 //			assert calledClosure
@@ -190,7 +190,8 @@ class IScanServiceTest extends TestBase {
 		def filename = "full-file.dll"
 		def fullfile = createFile(path, subdir, ".dll")
 		files << fullfile
-		
+		println "Full Filename: $fullfile.name"
+
 		def nonMatchFiles = []
 		nonMatchFiles << createFile(path, ".exe")
 		
