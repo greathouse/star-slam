@@ -131,7 +131,7 @@ class IScanServiceTest extends TestBase {
 		def nonMatchFiles = [] 
 		nonMatchFiles << createFile(path, ".exe")
 		
-		def projectId = createProject(path.toString(), "*"+validExtension)
+		def projectId = createProject(path.toString(), "/*"+validExtension)
 		def afterFiles = []
 						
 		def filecount = 0
