@@ -1,0 +1,22 @@
+<div id="projectList" class="row">
+    <table class="large-12 columns">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Root Path</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="project in projects">
+            <td><a href="#/projects/{{project.id}}">{{project.name}}</a></td>
+            <td>{{project.rootPath}}</td>
+            <td style="text-align: center"><a href="#/projects/{{project.id}}"><img src="/images/gears.png" /></a></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="row">
+    <a href="#" data-reveal-id="new-project-modal">New Project</a>
+</div>

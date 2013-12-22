@@ -1,0 +1,18 @@
+<div id="scanDetails" class="row">
+    <span style="display: inline-block; float:right; font-size: x-small; color: #E0E0E0"></span>
+    <h2>{{scan.initiatedTime  | date:'medium'}}</h2>
+    <table class="large-12 columns">
+        <thead>
+        <th>File</th>
+        <th>New</th>
+        <th>Changed</th>
+        </thead>
+        <tbody>
+        <tr ng-repeat="file in files">
+            <td>{{file.relativePath}}</td>
+            <td style="text-align: center"><img src="/images/check-32.png" ng-if="file.isNew" /></td>
+            <td style="text-align: center"><img src="/images/check-32.png" ng-if="file.hasChanged" /></td>
+        </tr>
+        </tbody>
+    </table>
+</div>

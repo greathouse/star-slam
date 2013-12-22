@@ -1,0 +1,22 @@
+<div id="projectDetails" class="row">
+    <span style="display: inline-block; float:right; font-size: x-small; color: #E0E0E0">{{project.id}}</span>
+    <h2>{{project.name}}</h2>
+    <table class="large-12 columns">
+        <thead>
+        <th># of Files</th>
+        <th>Started</th>
+        <th>Completed</th>
+        <th>Processing Time</th>
+        <th>Status</th>
+        </thead>
+        <tbody>
+        <tr class="clickable" ng-repeat="scan in scans" ng-click="goToScanDetail(scan)">
+            <td>{{scan.fileCount}}</td>
+            <td>{{scan.initiatedTime | date:'medium'}}</td>
+            <td>{{scan.completionTime | date:'medium'}}</td>
+            <td title="{{processingTimeInSeconds(scan)}} seconds">{{scan.processingTime | humanizeMilliseconds}}</td>
+            <td>{{scan.status}}</td>
+        </tr>
+        </tbody>
+    </table>
+</div>

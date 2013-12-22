@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>Star Slam</title>
+  <link rel="stylesheet" href="css/foundation.css">
+  <link rel="stylesheet" href="css/starslam.css">
+
+  <script src="js/vendor/jquery.js" type="text/javascript"></script>
+  <script src="js/vendor/underscore-min.js" type="text/javascript"></script>
+  <script src="js/vendor/knockout-2.3.0.js" type="text/javascript"></script>
+  <script src="js/vendor/custom.modernizr.js" type="text/javascript"></script>
+  <script src="js/vendor/sammy-0.7.4.min.js" type="text/javascript"></script>
+  <script src="js/vendor/moment.2.2.1.min.js" type="text/javascript"></script>
+</head>
+<body>
+
+<div class="contain-to-grid">
+  <nav class="top-bar">
+	<ul class="title-area">
+	  <li class="name">
+		<h1><a href="/">Star Slam</a></h1>
+	  </li>
+	  <!-- Remove the class "menu-icon" to get rid of menu icon. Take out "Menu" to just have icon alone -->
+	  <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
+	</ul>
+	<section class="top-bar-section">
+	  <ul class="right">
+		<li class="divider hide-for-small"></li>
+		<li class="has-form"></li>
+	  </ul>
+	</section>
+  </nav>
+</div>
+
+<div id="content" data-bind="with: selectedView">
+  <div data-bind="template: { name: templateName, data: data }"></div>
+</div>
+
+<div id="footer" style="text-align: center" class="row">
+	<img src="/green-moon-16x16.png" /> <span style="font-size: small; color: grey">Powered by <a href="http://www.greenmoonsoftware.com">Green Moon Software, LLC</a></span>
+</div>
+
+<script id="projectListTemplate" type="text/html">
+<div id="projectList" class="row">
+  <table class="large-12 columns">
+	<thead>
+	<tr>
+	  <th>Name</th>
+	  <th>Root Path</th>
+	  <th></th>
+	</tr>
+	</thead>
+	<tbody data-bind="foreach: projects, visible: projects().length > 0">
+	<tr>
+	  <td><a data-bind="text: name, click: goToDetails"></a></td>
+	  <td><span data-bind="text: rootPath"></span></td>
+	  <td style="text-align: center"><a href="#" data-bind="click: startScan"><img src="/images/gears.png" /></a></td>
+	</tr>
+	</tbody>
+  </table>
+</div>
+
+<div class="row">
+  <a href="#" data-reveal-id="new-project-modal">New Project</a>
+</div>
+</script>
+
+<div id="new-project-modal" class="reveal-modal">
+  <form id="projectForm">
+	<fieldset>
+	  <legend>New Project</legend>
+	  <div class="large-12 columns">
+		<input type="text" data-bind="value: name" placeholder="Project Name"/>
+		<small class="error" data-bind="visible: name.hasError, text: name.validationMessage"></small>
+	  </div>
+
+	  <div class="large-12 columns">
+		<input type="text" data-bind="value: rootPath" placeholder="Root Path"/>
+		<small class="error" data-bind="visible: rootPath.hasError, text: rootPath.validationMessage"></small>
+	  </div>
+
+	  <div class="large-12 columns">
+		<input type="text" data-bind="value: fileGlob" placeholder="File Types (pipe delimited)"/>
+		<small class="error" data-bind="visible: fileGlob.hasError, text: fileGlob.validationMessage"></small>
+	  </div>
+	  <button class="small" data-bind="click: create">Save</button>
+	  <a class="close-reveal-modal">&#215;</a>
+	</fieldset>
+  </form>
+</div>
+
+<script id="projectDetailsTemplate" type="text/html">
+<div id="projectDetails" class="row">
+  <span style="display: inline-block; float:right; font-size: x-small; color: #E0E0E0" data-bind="text: project.id()"></span>
+  <h2 data-bind="text: project.name()"></h2>
+  <table class="large-12 columns">
+	<thead>
+		<th># of Files</th>
+		<th>Started</th>
+		<th>Completed</th>
+		<th>Processing Time</th>
+		<th>Status</th>
+	</thead>
+	<tbody data-bind="foreach: scans, visible: scans().length > 0">
+	<tr class="clickable" data-bind="click: goToDetails">
+		<td data-bind="text: fileCount()"></td>
+	  <td data-bind="text: initiatedTime().format('lll')"></td>
+	  <td data-bind="if: completionTime()"><span data-bind="text: completionTime().format('lll')"></span></td>
+	  <td data-bind="text: moment.duration(processingTimeSeconds(), 'seconds').humanize(), attr: { title: processingTimeSeconds() + ' seconds' }"></td>
+	  <td data-bind="text: status"></td>
+	</tr>
+	</tbody>
+  </table>
+</div>
+</script>
+
+<script id="scanDetailsTemplate" type="text/html">
+<div id="scanDetails" class="row">
+	<span style="display: inline-block; float:right; font-size: x-small; color: #E0E0E0" data-bind="text: scan.id()"></span>
+	<h2 data-bind="text: scan.initiatedTime().format('lll')"></h2>
+	<table class="large-12 columns">
+	<thead>
+		<th>File</th>
+		<th>New</th>
+		<th>Changed</th>
+	</thead>
+	<tbody data-bind="foreach: files, visible: files().length > 0">
+	<tr>
+		<td data-bind="text: relativePath"></td>
+		<td style="text-align: center"><img src="/images/check-32.png" data-bind="visible: isNew" /></td>
+		<td style="text-align: center"><img src="/images/check-32.png" data-bind="visible: hasChanged" /></td>
+	</tr>
+	</tbody>
+	</table>
+</div>
+</script>
+
+<script>
+  document.write('<script src=/js/vendor/'
+  + ('__proto__' in {} ? 'zepto' : 'jquery')
+  + '.js><\/script>');
+</script>
+<script src="js/foundation/foundation.js" type="text/javascript"></script>
+<script src="js/foundation/foundation.reveal.js" type="text/javascript"></script>
+<script>
+  $(document).foundation();
+</script>
+<script src="/js/star-slam/projects.js"></script>
+</body>
+</html>
