@@ -23,10 +23,7 @@ final class ProjectService implements IProjectStore {
 	public String persist(Project project) {
 		use(OpenDatabase) {
 			dbConnector.getConnection { sql ->
-				def existing = sql.firstRow("select '1' from Project where name = ${project.name} and id <> ${project.id}")
-				if (existing) {
-					throw new DuplicateProjectNameException("There already exists a project named \"${project.name}\"")
-				}
+                checkForExistingProject(sql, project)
 
 				def id = project.id?:UUID.randomUUID().toString()
 				sql.execute("""
@@ -49,7 +46,14 @@ final class ProjectService implements IProjectStore {
 		}
 	}
 
-	@Override
+    private void checkForExistingProject(sql, project) {
+        def existing = sql.firstRow("select '1' from Project where name = ${project.name} and id <> ${project.id}")
+        if (existing) {
+            throw new DuplicateProjectNameException("There already exists a project named \"${project.name}\"")
+        }
+    }
+
+    @Override
 	public Project retrieve(String projectId) {
 		use(OpenDatabase) { 
 			dbConnector.getConnection { sql ->
