@@ -1,17 +1,23 @@
 package starslam.scan
 
+import org.junit.Before
 import org.junit.Test
 import starslam.AsyncAssert
-import starslam.TestBase
+import starslam.DatabaseTestHelper
+
+import static starslam.FileTestHelper.*
 import starslam.project.Project
 import starslam.project.ProjectStore
 
-class ScanServiceTest extends TestBase {
+class ScanServiceTest {
 	private ScanService impl
 	private ProjectStore projectStore
 	private ScanStore scanStore
-	
-	protected void onPostSetup() {
+
+    @Before
+	public void onSetup() {
+        def context = ScanContextTestHelper.wireContext()
+        DatabaseTestHelper.setup(context)
 		impl = context.getBean(ScanService)
 		projectStore = context.getBean(ProjectStore)
 		scanStore = context.getBean(ScanStore)

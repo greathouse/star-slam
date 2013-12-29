@@ -1,12 +1,16 @@
 package starslam.project
 
+import org.junit.Before
 import org.junit.Test
-import starslam.TestBase
+import starslam.DatabaseTestHelper
 
-class ProjectStoreTest extends TestBase {
+class ProjectStoreTest {
 	ProjectStore impl
-	
-	protected void onPostSetup() {
+
+    @Before
+	public void onSetup() {
+        def context = ProjectContextTestHelper.wireContext()
+        DatabaseTestHelper.setup(context)
 		impl = context.getBean(ProjectStore)
 	}
 	

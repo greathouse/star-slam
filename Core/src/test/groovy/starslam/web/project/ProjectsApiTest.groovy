@@ -1,14 +1,19 @@
 package starslam.web.project
 
+import com.greenmoonsoftware.tea.Tea
+import org.junit.Before
 import org.junit.Test
 import starslam.web.Kettle
-import starslam.web.WebTestBase
+import starslam.web.WebServerTestHelper
 
-import com.greenmoonsoftware.tea.Tea
-
-class ProjectsApiTest extends WebTestBase {
+class ProjectsApiTest {
 	final String URL = '/projects'
-	
+
+    @Before
+    public void onSetup() {
+        WebServerTestHelper.startServer()
+    }
+
 	private def successfulProjectBody() {
 		[
 			name:"Test1"

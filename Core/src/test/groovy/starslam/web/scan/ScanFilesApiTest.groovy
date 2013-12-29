@@ -1,17 +1,25 @@
 package starslam.web.scan
 
+import static starslam.FileTestHelper.rootPath
+import static starslam.FileTestHelper.createFile
+import org.junit.Before
 import org.junit.Test
 import starslam.AsyncAssert
 import starslam.web.Kettle
-import starslam.web.WebTestBase
+import starslam.web.WebServerTestHelper
 
-class ScanFilesApiTest extends WebTestBase {
+class ScanFilesApiTest {
+    @Before
+    public void onSetup() {
+        WebServerTestHelper.startServer()
+    }
+
 	private String setupWorkspace() {
 		def root = rootPath()
 		createFile(root, ".txt")
 		createFile(root, ".txt")
 		
-		def projectUrl
+		def projectUrl = ''
 		Kettle.withTea { tea ->
 			tea.post('/projects', [
 				name:"Test1"

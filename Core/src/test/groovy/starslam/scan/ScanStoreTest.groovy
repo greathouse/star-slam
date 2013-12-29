@@ -1,18 +1,21 @@
 package starslam.scan
 
+import org.junit.Before
 import org.junit.Test
-import starslam.TestBase
+import starslam.DatabaseTestHelper
 import starslam.project.ProjectStore
 import starslam.project.Project
 
 import com.google.common.io.Files
 
-class ScanStoreTest extends TestBase {
+class ScanStoreTest {
 	ScanStore scanStore
 	ProjectStore projectStore
 	
-	@Override
-	protected void onPostSetup() {
+	@Before
+	public void onSetup() {
+        def context = ScanContextTestHelper.wireContext()
+        DatabaseTestHelper.setup(context)
 		scanStore = context.getBean(ScanStore)
 		projectStore = context.getBean(ProjectStore)
 	}

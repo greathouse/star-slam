@@ -1,17 +1,18 @@
 package starslam.scan.plugins
 
+import com.google.common.io.Files
+import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
 
 import static groovy.json.JsonOutput.toJson
-import starslam.TestBase
 
-import com.google.common.io.Files
-
-class IPluginServiceTest extends TestBase {
+class IPluginServiceTest {
 	IPluginService impl
-	
-	protected void onPostSetup() {
+
+    @Before
+	public void onSetup() {
+        def context = PluginsContextTestHelper.wireContext()
 		impl = context.getBean(IPluginService)
 	}
 	
@@ -28,7 +29,7 @@ class IPluginServiceTest extends TestBase {
 			, name:name
 			, executable:executable
 		]
-		def subdir = new File(pluginDirectory, name)
+		def subdir = new File(PluginsContextTestHelper.pluginDirectory, name)
 		subdir.mkdirs()
 		new File(subdir, "plugin.json").withWriter { w -> w.write(toJson(json)) }
 		return subdir

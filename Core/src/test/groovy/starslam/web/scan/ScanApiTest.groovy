@@ -1,11 +1,20 @@
 package starslam.web.scan
 
+import static starslam.FileTestHelper.rootPath
+import static starslam.FileTestHelper.createFile
+import static starslam.DataGenerator.randomInt
+import org.junit.Before
 import org.junit.Test
 import starslam.AsyncAssert
 import starslam.web.Kettle
-import starslam.web.WebTestBase
+import starslam.web.WebServerTestHelper
 
-class ScanApiTest extends WebTestBase {
+class ScanApiTest {
+
+    @Before
+    public void onSetup() {
+        WebServerTestHelper.startServer()
+    }
 	
 	private String setupWorkspace(int numberOfFiles) {
 		def root = rootPath()
@@ -34,7 +43,7 @@ class ScanApiTest extends WebTestBase {
 		println "Number of files: ${numberOfFiles}"
 		def projectUrl = setupWorkspace(numberOfFiles)
 		
-		def scanUrl
+		def scanUrl = ''
 		Kettle.withTea { tea ->
 			tea.post(projectUrl+"/scans",[:])
 			.expectStatus(200)
