@@ -6,7 +6,7 @@ import starslam.TestBase
 import starslam.project.Project
 import starslam.project.ProjectStore
 
-class IScanServiceTest extends TestBase {
+class ScanServiceTest extends TestBase {
 	private ScanService impl
 	private ProjectStore projectStore
 	private ScanStore scanStore
