@@ -19,15 +19,12 @@ class PluginsContextTestHelper {
     }
 
     private static AnnotationConfigApplicationContext wire() {
-        context = new AnnotationConfigApplicationContext()
-        context.register(
+        context = new AnnotationConfigApplicationContext(
                 TestConfiguration
                 , ProjectModuleConfiguration
                 , ScanModuleConfiguration
                 , PluginModuleConfiguration
         )
-
-        context.refresh()
         pluginDirectory = context.getBean("pluginDirectory")
         wired = true
         context

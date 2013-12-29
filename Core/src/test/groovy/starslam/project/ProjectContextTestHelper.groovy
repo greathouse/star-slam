@@ -16,13 +16,10 @@ class ProjectContextTestHelper {
     }
 
     private static AnnotationConfigApplicationContext wire() {
-        context = new AnnotationConfigApplicationContext()
-        context.register(
+        context = new AnnotationConfigApplicationContext(
                 TestConfiguration
                 , ProjectModuleConfiguration
         )
-
-        context.refresh()
         wired = true
         context
     }

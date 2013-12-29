@@ -17,14 +17,11 @@ class ScanContextTestHelper {
     }
 
     private static AnnotationConfigApplicationContext wire() {
-        context = new AnnotationConfigApplicationContext()
-        context.register(
+        context = new AnnotationConfigApplicationContext(
                 TestConfiguration
                 , ProjectModuleConfiguration
                 , ScanModuleConfiguration
         )
-
-        context.refresh()
         wired = true
         context
     }
