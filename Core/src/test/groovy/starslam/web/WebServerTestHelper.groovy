@@ -5,7 +5,6 @@ import org.eclipse.jetty.servlet.ServletContextHandler
 import org.eclipse.jetty.servlet.ServletHolder
 import org.springframework.context.ApplicationContext
 import org.springframework.web.servlet.DispatcherServlet
-import starslam.ContextTestHelper
 import starslam.DatabaseTestHelper
 
 class WebServerTestHelper {
