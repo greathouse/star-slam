@@ -10,15 +10,20 @@ class ProjectContextTestHelper {
 
     public static ApplicationContext wireContext() {
         if (!wired) {
-            context = new AnnotationConfigApplicationContext()
-            context.register(
-                    TestConfiguration
-                    ,	ProjectModuleConfiguration
-            )
-
-            context.refresh()
-            wired = true
+            context = wire()
         }
+        context
+    }
+
+    private static AnnotationConfigApplicationContext wire() {
+        context = new AnnotationConfigApplicationContext()
+        context.register(
+                TestConfiguration
+                , ProjectModuleConfiguration
+        )
+
+        context.refresh()
+        wired = true
         context
     }
 }

@@ -14,17 +14,22 @@ class WebContextTestHelper {
 
     public static ApplicationContext wireContext() {
         if (!wired) {
-            context = new AnnotationConfigWebApplicationContext()
-            context.register(
-                    TestConfiguration
-                    ,	ProjectModuleConfiguration
-                    , ScanModuleConfiguration
-                    , PluginModuleConfiguration
-                    , WebConfig
-            )
-
-            wired = true
+            context = wire()
         }
+        context
+    }
+
+    private static AnnotationConfigWebApplicationContext wire() {
+        context = new AnnotationConfigWebApplicationContext()
+        context.register(
+                TestConfiguration
+                , ProjectModuleConfiguration
+                , ScanModuleConfiguration
+                , PluginModuleConfiguration
+                , WebConfig
+        )
+
+        wired = true
         context
     }
 }

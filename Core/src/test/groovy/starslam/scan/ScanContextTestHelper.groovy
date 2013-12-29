@@ -11,16 +11,21 @@ class ScanContextTestHelper {
 
     public static ApplicationContext wireContext() {
         if (!wired) {
-            context = new AnnotationConfigApplicationContext()
-            context.register(
-                    TestConfiguration
-                    ,	ProjectModuleConfiguration
-                    , ScanModuleConfiguration
-            )
-
-            context.refresh()
-            wired = true
+            context = wire()
         }
+        context
+    }
+
+    private static AnnotationConfigApplicationContext wire() {
+        context = new AnnotationConfigApplicationContext()
+        context.register(
+                TestConfiguration
+                , ProjectModuleConfiguration
+                , ScanModuleConfiguration
+        )
+
+        context.refresh()
+        wired = true
         context
     }
 }
