@@ -2,19 +2,19 @@ package starslam.scan
 
 import org.junit.Test
 import starslam.TestBase
-import starslam.project.IProjectStore
+import starslam.project.ProjectStore
 import starslam.project.Project
 
 import com.google.common.io.Files
 
-class IScanStoreTest extends TestBase {
-	IScanStore scanStore
-	IProjectStore projectStore
+class ScanStoreTest extends TestBase {
+	ScanStore scanStore
+	ProjectStore projectStore
 	
 	@Override
 	protected void onPostSetup() {
-		scanStore = context.getBean(IScanStore)
-		projectStore = context.getBean(IProjectStore)
+		scanStore = context.getBean(ScanStore)
+		projectStore = context.getBean(ProjectStore)
 	}
 
 	private String createProject() {

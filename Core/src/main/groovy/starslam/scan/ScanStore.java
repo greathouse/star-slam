@@ -1,7 +1,7 @@
 package starslam.scan;
 
 
-public interface IScanStore {
+public interface ScanStore {
 	String persist(ScanInfo scan);
 	ScanInfo retrieveScan(String id);
 	ScanInfo retrieveLatestScanForProject(String projectId);

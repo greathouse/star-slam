@@ -3,14 +3,14 @@ package starslam.project
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import starslam.IDbConnection
+import starslam.DbConnection
 
 @Configuration
 class ProjectModuleConfiguration {
-	@Autowired IDbConnection dbConnection
+	@Autowired DbConnection dbConnection
 
 	@Bean
-	public IProjectStore projectStore() {
-		return new ProjectService(dbConnection)
+	public ProjectStore projectStore() {
+		return new ProjectServiceDefault(dbConnection)
 	}
 }

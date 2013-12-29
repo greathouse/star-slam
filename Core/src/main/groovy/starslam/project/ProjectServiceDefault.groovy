@@ -1,10 +1,10 @@
 package starslam.project
 
-import starslam.IDbConnection
+import starslam.DbConnection
 import starslam.OpenDatabase
 
-final class ProjectService implements IProjectStore {
-	final IDbConnection dbConnector
+final class ProjectServiceDefault implements ProjectStore {
+	final DbConnection dbConnector
 	
 	final def projectRowMapper = { it ->
 		return new Project([
@@ -15,7 +15,7 @@ final class ProjectService implements IProjectStore {
 		])
 	}
 
-	public ProjectService(IDbConnection conn) {
+	public ProjectServiceDefault(DbConnection conn) {
 		dbConnector = conn
 	}
 

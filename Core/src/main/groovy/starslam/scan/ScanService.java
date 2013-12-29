@@ -2,7 +2,7 @@ package starslam.scan;
 
 import groovy.lang.Closure;
 
-public interface IScanService {
+public interface ScanService {
 	ScanInfo initiate(
 		String projectId, 
 		Closure<ScanInfo> onBegin, 

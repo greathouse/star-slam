@@ -1,7 +1,6 @@
 package starslam
 
 import com.google.common.io.Files
-import groovy.sql.Sql
 import org.springframework.context.annotation.Bean
 
 @org.springframework.context.annotation.Configuration
@@ -22,7 +21,7 @@ class Configuration {
 	}
 
 	@Bean
-	public IDbConnection dbConnection() {
+	public DbConnection dbConnection() {
 		new DatabaseConnector(dbUrl())
 	}
 }

@@ -3,11 +3,11 @@ package starslam.project
 import org.junit.Test
 import starslam.TestBase
 
-class IProjectStoreTest extends TestBase {
-	IProjectStore impl
+class ProjectStoreTest extends TestBase {
+	ProjectStore impl
 	
 	protected void onPostSetup() {
-		impl = context.getBean(IProjectStore)
+		impl = context.getBean(ProjectStore)
 	}
 	
 	private void saveRetrieveUpdate(Project persist) {

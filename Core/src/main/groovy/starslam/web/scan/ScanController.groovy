@@ -6,15 +6,15 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
-import starslam.scan.IScanService
-import starslam.scan.IScanStore
+import starslam.scan.ScanService
+import starslam.scan.ScanStore
 
 import static groovy.json.JsonOutput.toJson
 
 @Controller
 class ScanController {
-	@Autowired IScanService scanService
-	@Autowired IScanStore scanStore
+	@Autowired ScanService scanService
+	@Autowired ScanStore scanStore
 
 	@RequestMapping(value = "/projects/{projectId}/scans", method = RequestMethod.POST)
 	@ResponseBody ResponseEntity<String> post(@RequestBody String body, @PathVariable projectId) {

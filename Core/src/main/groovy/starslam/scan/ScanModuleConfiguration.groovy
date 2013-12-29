@@ -3,21 +3,21 @@ package starslam.scan
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import starslam.IDbConnection
-import starslam.project.IProjectStore
+import starslam.DbConnection
+import starslam.project.ProjectStore
 
 @Configuration
 class ScanModuleConfiguration {
-	@Autowired IDbConnection dbConnection
-	@Autowired IProjectStore projectStore
+	@Autowired DbConnection dbConnection
+	@Autowired ProjectStore projectStore
 
 	@Bean
-	public IScanStore scanStore() {
-		return new ScanStore(dbConnection)
+	public ScanStore scanStore() {
+		return new ScanStoreDefault(dbConnection)
 	}
 
 	@Bean
-	public IScanService scanService() {
-		return new ScanService(dbConnection, projectStore, scanStore())
+	public ScanService scanService() {
+		return new ScanServiceDefault(dbConnection, projectStore, scanStore())
 	}
 }

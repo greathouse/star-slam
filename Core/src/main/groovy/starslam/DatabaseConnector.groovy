@@ -2,7 +2,7 @@ package starslam
 
 import groovy.sql.Sql
 
-class DatabaseConnector implements IDbConnection {
+class DatabaseConnector implements DbConnection {
 	private final String DBURL;
 	
 	public DatabaseConnector(String dbUrl) {

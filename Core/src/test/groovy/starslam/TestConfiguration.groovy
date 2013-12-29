@@ -22,10 +22,10 @@ class TestConfiguration {
 	}
 
 	@Bean
-	public IDbConnection dbConnection() {
+	public DbConnection dbConnection() {
 		def conn = {
 			Sql.newInstance(dbUrl(), '', '', 'org.h2.Driver')
-		} as IDbConnection
+		} as DbConnection
 
 		conn
 	}

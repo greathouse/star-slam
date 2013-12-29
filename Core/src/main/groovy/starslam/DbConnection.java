@@ -2,6 +2,6 @@ package starslam;
 
 import groovy.sql.Sql;
 
-public interface IDbConnection {
+public interface DbConnection {
 	Sql getConnection();
 }

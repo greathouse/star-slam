@@ -1,10 +1,10 @@
 package starslam.scan
 
-import starslam.IDbConnection
+import starslam.DbConnection
 import starslam.OpenDatabase
 
-final class ScanStore implements IScanStore {
-	final IDbConnection dbConnector
+final class ScanStoreDefault implements ScanStore {
+	final DbConnection dbConnector
 	
 	final def scanSelect = "id, project_id, created, completed, production_date, root_path, processing_time, status, file_glob, file_count"
 	final def scanRowMapper = { it ->
@@ -37,7 +37,7 @@ final class ScanStore implements IScanStore {
 		])
 	}
 	
-	public ScanStore(IDbConnection conn) {
+	public ScanStoreDefault(DbConnection conn) {
 		dbConnector = conn
 	}
 

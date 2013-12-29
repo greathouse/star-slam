@@ -1,21 +1,20 @@
 package starslam.scan
 
-import org.junit.Ignore
 import org.junit.Test
 import starslam.AsyncAssert
 import starslam.TestBase
-import starslam.project.IProjectStore
 import starslam.project.Project
+import starslam.project.ProjectStore
 
 class IScanServiceTest extends TestBase {
-	private IScanService impl
-	private IProjectStore projectStore
-	private IScanStore scanStore
+	private ScanService impl
+	private ProjectStore projectStore
+	private ScanStore scanStore
 	
 	protected void onPostSetup() {
-		impl = context.getBean(IScanService)
-		projectStore = context.getBean(IProjectStore)
-		scanStore = context.getBean(IScanStore)
+		impl = context.getBean(ScanService)
+		projectStore = context.getBean(ProjectStore)
+		scanStore = context.getBean(ScanStore)
 	}
 	
 	private String createProject(String rootPath) {
@@ -206,10 +205,8 @@ class IScanServiceTest extends TestBase {
 		
 		def projectId = createProject(path.toString(), "*"+validExtension1+"|*"+validExtension2+"|/"+subdir+'/'+fullfile.name)
 		def afterFiles = []
-						
-		def filecount = 0
-		def scannedFile = null
-		def actual = impl.initiate(projectId, {}, { x -> afterFiles << x }, {})
+
+		impl.initiate(projectId, {}, { x -> afterFiles << x }, {})
 		
 		AsyncAssert.run {
 			assert afterFiles.size() == files.size()

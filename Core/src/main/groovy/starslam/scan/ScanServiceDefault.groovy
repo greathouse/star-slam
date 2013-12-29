@@ -4,18 +4,17 @@ import groovy.io.FileType
 import groovyx.gpars.actor.Actors
 import org.springframework.util.AntPathMatcher
 
-import java.nio.file.*
 import java.security.MessageDigest
 
-import starslam.IDbConnection
-import starslam.project.IProjectStore
+import starslam.DbConnection
+import starslam.project.ProjectStore
 
-class ScanService implements IScanService {
-	final IDbConnection dbConnector
-	final IProjectStore projectStore
-	final IScanStore scanStore
+class ScanServiceDefault implements ScanService {
+	final DbConnection dbConnector
+	final ProjectStore projectStore
+	final ScanStore scanStore
 	
-	public ScanService(IDbConnection conn, IProjectStore projectStore, IScanStore scanStore) {
+	public ScanServiceDefault(DbConnection conn, ProjectStore projectStore, ScanStore scanStore) {
 		dbConnector = conn
 		this.projectStore = projectStore
 		this.scanStore = scanStore

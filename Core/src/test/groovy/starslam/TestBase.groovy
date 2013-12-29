@@ -1,14 +1,11 @@
 package starslam
 import groovy.sql.Sql
-import junit.framework.TestCase
-
 import com.google.common.io.Files
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.servlet.ServletContextHandler
 import org.eclipse.jetty.servlet.ServletHolder
 import org.junit.Before
 import org.springframework.context.ApplicationContext
-import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext
 import org.springframework.web.servlet.DispatcherServlet
 import starslam.project.ProjectModuleConfiguration
@@ -50,7 +47,7 @@ abstract class TestBase {
 		}
 
 		if (!porpoised) { new Bootstrapper().porpoise(context.getBean("dbUrl")) ; porpoised = true }
-		sql = context.getBean(IDbConnection).connection
+		sql = context.getBean(DbConnection).connection
 		cleanUpDatabase()
 
 		onPostSetup()

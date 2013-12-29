@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.ResponseBody
 import starslam.project.DuplicateProjectNameException
-import starslam.project.IProjectStore
+import starslam.project.ProjectStore
 import starslam.project.Project
 import starslam.web.ErrorMessage
 import starslam.web.PostFailureResponse
@@ -25,7 +25,7 @@ import static groovy.json.JsonOutput.toJson
 @RequestMapping("/projects")
 class ProjectController {
 
-	@Autowired IProjectStore projectStore
+	@Autowired ProjectStore projectStore
 
 	@RequestMapping("")
 	@ResponseBody List<Project> index() {
