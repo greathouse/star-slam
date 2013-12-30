@@ -63,7 +63,7 @@ class ProjectsApiTest {
 
 	@Test
 	public void update() {
-		def viewUrl
+		def viewUrl = ''
 		def project = successfulProjectBody()
 		Kettle.withTea { tea ->
 			tea.post(URL, project)
