@@ -1,6 +1,7 @@
 package starslam.web.project
 
 import groovy.json.JsonSlurper
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import starslam.project.DuplicateProjectNameException
 import starslam.project.Project
+import starslam.project.ProjectStore
 import starslam.web.ErrorMessage
 import starslam.web.PostFailureResponse
 import starslam.web.PostSuccessResponse
@@ -18,8 +20,11 @@ import static groovy.json.JsonOutput.toJson
 import static starslam.web.Validation.REQUIRED
 
 @Controller
-class PostProjectController extends ProjectController {
-    @RequestMapping(value="", method = RequestMethod.POST)
+class PostProjectController {
+
+    @Autowired protected ProjectStore projectStore
+
+    @RequestMapping(value="/projects", method = RequestMethod.POST)
     public ResponseEntity<String> post(@RequestBody String body) {
         def json = new JsonSlurper().parseText(body)
         def errors = performValidation(json)
