@@ -1,15 +1,12 @@
 package starslam.scan
 
-import java.io.IOException;
-import java.nio.file.*
-import java.nio.file.attribute.BasicFileAttributes
-import static java.nio.file.FileVisitResult.*
+import java.nio.file.Path
 
 class FileFinder {
 	private final Closure<Path> onFound
 	private final String pattern
 	
-	public FileFinder(String pattern, Closure onFound) {
+	public FileFinder(String pattern, Closure<Path> onFound) {
 		this.pattern = pattern
 		this.onFound = onFound
 	}
