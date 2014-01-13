@@ -7,7 +7,6 @@ version = '0.1-SNAPSHOT'
 mainClassName = 'demo.WebApp'
 applicationName = 'webapp'
 
-def localMavenRepo = 'file://' + new File(System.getProperty('user.home'), '.m2/repository').absolutePath
 
 buildscript {
   repositories {
@@ -20,13 +19,12 @@ buildscript {
 
 
 repositories {
-  mavenRepo url: localMavenRepo
   mavenCentral()
 }
 
 dependencies {
 	testCompile 'junit:junit:4.11'
-	testCompile group: 'com.greenmoonsoftware', name: 'green-tea-test', version: '1.0-SNAPSHOT'
+	testCompile group: 'com.greenmoonsoftware', name: 'green-tea-test', version: '0.9.1'
 	groovy 'org.codehaus.groovy:groovy-all:2.1.6'
 	
 	compile 'commons-cli:commons-cli:1.1'
