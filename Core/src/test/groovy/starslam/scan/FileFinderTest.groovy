@@ -66,4 +66,18 @@ class FileFinderTest {
         assert 1 == actualFoundFiles.size()
         assert actualFoundFiles.contains(expectedToFind)
     }
+
+    @Test
+    public void wildcardSubdirectory_ShouldBeFound() {
+        def searchSuffix = ".txt"
+        def expectedToFind = [] as Set
+        expectedToFind << FileTestHelper.createFile(rootPath, "subdir", searchSuffix)
+        expectedToFind << FileTestHelper.createFile(rootPath, "another-subdir", searchSuffix)
+
+        def actualFoundFiles = []
+        def finder = new FileFinder("**/*${searchSuffix}", { f -> actualFoundFiles << f } as Closure<Path>)
+        finder.execute(rootPath)
+
+        assert actualFoundFiles.containsAll(expectedToFind)
+    }
 }
