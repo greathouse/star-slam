@@ -2,7 +2,7 @@ package starslam.scan.plugins
 
 import groovy.json.JsonSlurper
 import org.junit.Before
-import org.junit.Ignore
+import org.junit.Test
 
 class JarPluginTest {
     JarPlugin plugin
@@ -30,12 +30,6 @@ class JarPluginTest {
         runVersionTest("jackson-core-asl-1.9.13.jar", "1.9.13")
     }
 
-    @Test
-    @Ignore
-    public void givenJarWithoutManifestEntry_shouldInspectFileName() {
-        runVersionTest("green-tea-test-0.9.1.jar", "0.9.1")
-    }
-
     private void runVersionTest(String jarName, String expectedVersion) {
         def jarPath = getPathToJar(jarName)
         def actual = plugin.process(new File(jarPath))
@@ -55,6 +49,3 @@ class JarPluginTest {
         jarPath
     }
 }
-
-
-import org.junit.Test
