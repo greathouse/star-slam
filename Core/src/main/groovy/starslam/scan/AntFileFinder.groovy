@@ -2,11 +2,11 @@ package starslam.scan
 
 import java.nio.file.Path
 
-class FileFinder {
+class AntFileFinder {
 	private final Closure<Path> onFound
 	private final String pattern
 	
-	public FileFinder(String pattern, Closure<Path> onFound) {
+	public AntFileFinder(String pattern, Closure<Path> onFound) {
 		this.pattern = pattern
 		this.onFound = onFound
 	}

@@ -6,7 +6,7 @@ import starslam.FileTestHelper
 
 import java.nio.file.Path
 
-class FileFinderTest {
+class AntFileFinderTest {
     String rootPath
 
     @Before
@@ -39,7 +39,7 @@ class FileFinderTest {
         }
         assert expectedFindFiles.size() == expectedFileSuffixes.size()
         def actualFoundFiles = []
-        def finder = new FileFinder("*"+searchSuffixes.join("|*"), { f -> actualFoundFiles << f } as Closure<Path>)
+        def finder = new AntFileFinder("*"+searchSuffixes.join("|*"), { f -> actualFoundFiles << f } as Closure<Path>)
         finder.execute(rootPath)
         assertFoundFiles(expectedFindFiles, actualFoundFiles)
     }
@@ -60,7 +60,7 @@ class FileFinderTest {
         def expectedToFind = FileTestHelper.createFile(rootPath, "subdir", searchSuffix1)
 
         def actualFoundFiles = []
-        def finder = new FileFinder("${subdir}/*${searchSuffix1}", { f -> actualFoundFiles << f } as Closure<Path>)
+        def finder = new AntFileFinder("${subdir}/*${searchSuffix1}", { f -> actualFoundFiles << f } as Closure<Path>)
         finder.execute(rootPath)
 
         assert 1 == actualFoundFiles.size()
@@ -75,7 +75,7 @@ class FileFinderTest {
         expectedToFind << FileTestHelper.createFile(rootPath, "another-subdir", searchSuffix)
 
         def actualFoundFiles = []
-        def finder = new FileFinder("**/*${searchSuffix}", { f -> actualFoundFiles << f } as Closure<Path>)
+        def finder = new AntFileFinder("**/*${searchSuffix}", { f -> actualFoundFiles << f } as Closure<Path>)
         finder.execute(rootPath)
 
         assert actualFoundFiles.containsAll(expectedToFind)

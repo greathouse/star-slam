@@ -209,7 +209,7 @@ class ScanServiceTest {
 		def nonMatchFiles = []
 		nonMatchFiles << createFile(path, ".exe")
 		
-		def projectId = createProject(path.toString(), "*"+validExtension1+"|*"+validExtension2+"|/"+subdir+'/'+fullfile.name)
+		def projectId = createProject(path.toString(), "*"+validExtension1+"|*"+validExtension2+"|"+subdir+'/'+fullfile.name)
 		def afterFiles = []
 
 		impl.initiate(projectId, {}, { x -> afterFiles << x }, {})
