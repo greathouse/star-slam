@@ -2,8 +2,7 @@ package starslam.scan.plugins
 
 import groovy.json.JsonSlurper
 import org.junit.Before
-import org.junit.Test
-
+import org.junit.Ignore
 
 class JarPluginTest {
     JarPlugin plugin
@@ -27,20 +26,35 @@ class JarPluginTest {
     }
 
     @Test
-    public void givenValidPath_shouldReturnExpectedVersion() {
-        def jarStream = ClassLoader.getSystemResourceAsStream("jackson-core-asl-1.9.13.jar")
+    public void givenJarWithManifestEntry_shouldReturnExpectedVersion() {
+        runVersionTest("jackson-core-asl-1.9.13.jar", "1.9.13")
+    }
+
+    @Test
+    @Ignore
+    public void givenJarWithoutManifestEntry_shouldInspectFileName() {
+        runVersionTest("green-tea-test-0.9.1.jar", "0.9.1")
+    }
+
+    private void runVersionTest(String jarName, String expectedVersion) {
+        def jarPath = getPathToJar(jarName)
+        def actual = plugin.process(new File(jarPath))
+        assert actual != null
+        def actualJson = new JsonSlurper().parseText(actual.data)
+        assert expectedVersion == actualJson.version
+    }
+
+    private String getPathToJar(String jarName) {
+        def jarStream = ClassLoader.getSystemResourceAsStream(jarName)
         def jarFile = File.createTempFile("test", ".jar")
         jarFile.withOutputStream { out ->
             out << jarStream
         }
-
         def jarPath = jarFile.canonicalPath
         assert jarPath != null
-
-        def actual = plugin.process(new File(jarPath))
-
-        assert actual != null
-        def actualJson = new JsonSlurper().parseText(actual.data)
-        assert "1.9.13" == actualJson.version
+        jarPath
     }
 }
+
+
+import org.junit.Test
